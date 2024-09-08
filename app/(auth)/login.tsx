@@ -18,6 +18,15 @@ import axios from "axios";
 import { styles } from "../../styles";
 import Kudu from "../../assets/images/kudu.png";
 import { AntDesign } from "@expo/vector-icons";
+import {
+  GoogleOneTapSignIn,
+  statusCodes,
+  isErrorWithCode,
+  GoogleSignin,
+  isSuccessResponse,
+  isNoSavedCredentialFoundResponse,
+} from '@react-native-google-signin/google-signin';
+
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 const SCREEN_HEIGHT = Dimensions.get("screen").height;
@@ -61,31 +70,38 @@ const LoginComponent = () => {
   }
   
   const signIn = async () => {
-    const res = await axios.get('http://localhost:3000/api/login')
+    try {
+      await GoogleSignin.hasPlayServices();
+      const response = await GoogleOneTapSignIn.signIn();
+  
+      if (isSuccessResponse(response)) {
+        // read user's info
+        console.log(response.data);
+      } else if (isNoSavedCredentialFoundResponse(response)) {
+        // Android and Apple only.
+        // No saved credential found, call `createAccount`
+      }
+    } catch (error) {
+      console.warn(error)
+      if (isErrorWithCode(error)) {
+        switch (error.code) {
+          case statusCodes.ONE_TAP_START_FAILED:
+            // Android-only, you probably have hit rate limiting.
+            // You can still call `presentExplicitSignIn` in this case.
+            break;
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
+            // Android: play services not available or outdated
+            // Web: when calling an unimplemented api (requestAuthorization)
+            break;
+          default:
+          // something else happened
+        }
+      } else {
+        // an error that's not related to google sign in occurred
+      }
+    }
+  };
 
-  }
-
-  // const signIn = async () => {
-  //   if (formCheck()) {
-  //     const data = {
-  //       email,
-  //       password,
-  //     };
-
-  //     try {
-  //       const res = await API.V1.AUTH.LogIn(data);
-  //       if (res.status == 200) {
-  //         dispatch(setProfile(res.data));
-  //         dispatch(setAuthenticated(true));
-  //         router.replace("/(tabs)");
-  //       }
-  //     } catch (err) {
-  //       console.warn(err.message);
-  //       setError(true);
-  //       setErrorMessage("Invalid credentials, please try again");
-  //     }
-  //   }
-  // };
 
   return (
     <SafeAreaView
@@ -109,7 +125,7 @@ const LoginComponent = () => {
             <Text style={{color:'white', fontSize:24} }>To continue, sign in with your wits account.</Text>
           </View>
 
-          <TouchableOpacity activeOpacity={0.7} style={{backgroundColor:'white', marginHorizontal:'10%',marginVertical:'5%',paddingHorizontal:'7%',paddingVertical:'3%',borderRadius:7,  flexDirection:'row', alignItems:'center', }}>
+          <TouchableOpacity onPress={signIn} activeOpacity={0.7} style={{backgroundColor:'white', marginHorizontal:'10%',marginVertical:'5%',paddingHorizontal:'7%',paddingVertical:'3%',borderRadius:7,  flexDirection:'row', alignItems:'center', }}>
             <AntDesign name="google" color={'black'} size={24} />
             <Text style={{color:'black', fontSize:20, paddingHorizontal:'10%'}}>Continue with Google</Text>
           </TouchableOpacity>

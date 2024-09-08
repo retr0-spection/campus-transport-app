@@ -1,9 +1,7 @@
-//import liraries
-import React, { Component, useEffect } from "react";
+import React from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Dimensions,
   Image,
