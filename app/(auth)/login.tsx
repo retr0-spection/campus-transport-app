@@ -14,18 +14,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
 import { setAuthenticated, setProfile } from "../../redux/slices/userSlice";
 import { router } from "expo-router";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { styles } from "../../styles";
 import Kudu from "../../assets/images/kudu.png";
 import { AntDesign } from "@expo/vector-icons";
 import {
-  GoogleOneTapSignIn,
   statusCodes,
   isErrorWithCode,
   GoogleSignin,
   isSuccessResponse,
   isNoSavedCredentialFoundResponse,
 } from '@react-native-google-signin/google-signin';
+import API from "@/api";
 
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
@@ -72,15 +72,19 @@ const LoginComponent = () => {
   const signIn = async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      const response = await GoogleOneTapSignIn.signIn();
+      const _ = await GoogleSignin.signIn();
+
   
-      if (isSuccessResponse(response)) {
-        // read user's info
-        console.log(response.data);
-      } else if (isNoSavedCredentialFoundResponse(response)) {
-        // Android and Apple only.
-        // No saved credential found, call `createAccount`
+      const config:AxiosRequestConfig = {
+        headers:{
+          'X-Google-Token':_.data?.idToken
+        }
       }
+      const response = await API.V1.Auth.Verify(config)
+
+      console.warn(response.data)
+
+     
     } catch (error) {
       console.warn(error)
       if (isErrorWithCode(error)) {
@@ -129,8 +133,6 @@ const LoginComponent = () => {
             <AntDesign name="google" color={'black'} size={24} />
             <Text style={{color:'black', fontSize:20, paddingHorizontal:'10%'}}>Continue with Google</Text>
           </TouchableOpacity>
-
-         
         </View>
       </View>
     </SafeAreaView>
