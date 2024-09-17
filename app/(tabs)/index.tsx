@@ -3,12 +3,6 @@ import { Dimensions, StyleSheet, TouchableOpacity, View, Text, Platform, Linking
 import { GooglePlaceDetail, GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { useState, useRef } from 'react';
 import MapViewDirections from 'react-native-maps-directions';
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { useRouter } from 'expo-router';
-
 
 const { width, height } = Dimensions.get("window");
 
@@ -33,9 +27,6 @@ function InputAutocomplete({
   placeholder,
   onPlaceSelected,
 }: InputAutocompleteProps) {
-
-const HomeScreen = () => {
-  const router = useRouter();
   return (
     <>
       <Text>{label}</Text>
@@ -140,6 +131,7 @@ export default function App() {
           label="Destination" 
           onPlaceSelected={(details) => onPlaceSelected(details, "destination")}
         />
+
         <TouchableOpacity style={styles.button} onPress={traceRoute}>
           <Text style={styles.buttonText}>Trace Route</Text>
         </TouchableOpacity>

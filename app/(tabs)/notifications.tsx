@@ -52,7 +52,6 @@ const NotificationsScreen = () => {
     return (
         <SafeAreaView style={{ height: "100%", width: "100%", backgroundColor: "white" }}>
             <View style={styles.headerContainer}>
-                <Ionicons name="arrow-back" color={'black'} size={26} />
                 <Text style={styles.headerTitle} /* onPress={() => router.push('/rentals')} */>Notifications</Text>
             </View>
             <View>
