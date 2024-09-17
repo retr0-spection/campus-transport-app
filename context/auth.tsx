@@ -36,11 +36,9 @@ function useProtectedRoute(user, authenticated, rootNavigation, navigation) {
       ) {
         // Redirect to the sign-in page.
         router.replace("/(auth)/landing");
-      } else if (user && authenticated) {
+      } else {
         // Redirect away from the sign-in page.
         router.replace("/(tabs)");
-      } else {
-        router.replace("/(auth)");
       }
     }
 

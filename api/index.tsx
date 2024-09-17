@@ -5,9 +5,16 @@ const domain = 'http://ec2-52-40-184-137.us-west-2.compute.amazonaws.com'
 const testDomain = 'http://localhost:3000'
 
 
+
+interface VerifyResponse {
+    message:string;
+    token:string;
+    refresh_token:string;
+}
+
 const Auth = {
-    Verify : (config: AxiosRequestConfig) => {
-        return axios.post(domain + '/api/v1/auth/google-auth', {}, config)
+    Verify : async (config: AxiosRequestConfig): Promise<VerifyResponse> => {
+        return (await axios.post(domain + '/api/v1/auth/google-auth', {}, config)).data
     }
 }
 
