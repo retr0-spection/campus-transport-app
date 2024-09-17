@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ScooterImage from '../../assets/images/scooter.png'
-import Skateboard from '../../assets/images/skateboard.png'
-import Bicycle from '../../assets/images/bicycle.png'
+import ScooterImage from '../../../assets/images/scooter.png'
+import Skateboard from '../../../assets/images/skateboard.png'
+import Bicycle from '../../../assets/images/bicycle.png'
+import { useNavigation, useRouter } from 'expo-router';
 
 interface RentalItem {
   name: string;
@@ -34,6 +35,14 @@ const rentalItems: RentalItem[] = [
 ];
 
 const RentalScreen: React.FC = () => {
+  const router = useRouter();
+
+
+
+    const navigate = () => {
+      router.push('/(rentals)/confirmation')
+    }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -47,7 +56,7 @@ const RentalScreen: React.FC = () => {
                 {item.available ? 'Available' : 'Unavailable'}
               </Text>
               <Text style={styles.unitsText}>{item.units} units available</Text>
-              <TouchableOpacity style={styles.rentButton}>
+              <TouchableOpacity style={styles.rentButton} onPress={navigate}>
                 <Text style={styles.rentButtonText}>Rent</Text>
               </TouchableOpacity>
             </View>

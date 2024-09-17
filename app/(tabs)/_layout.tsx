@@ -4,6 +4,7 @@ import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -28,16 +29,27 @@ export default function TabLayout() {
         options={{
           title: 'Rentals',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <MaterialIcons name="electric-bike" color={color} size={22} />
+
           ),
         }}
       />
        <Tabs.Screen
-        name="(notifications)"
+        name="(schedule)"
+        options={{
+          title: 'Schedules',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name="calendar" color={color} size={22} />
+          ),
+        }}
+      />
+       <Tabs.Screen
+        name="notifications"
         options={{
           title: 'Notifications',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <Ionicons name="notifications" color={color} size={22} />
+
           ),
         }}
       />

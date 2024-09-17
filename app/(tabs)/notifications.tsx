@@ -28,11 +28,20 @@ const NotificationsScreen = () => {
     const Notifications: NotificationItem[] = [
         {id:0, title:"Bus Alert", message:"The full circuit bus will be departing in 10 minutes. Make sure you're ready to catch your ride!", timestamp: "Sep 16, 13:35 PM"},
         {id:0, title:"Bus Alert", message:"The full circuit bus will be departing in 30 minutes. Make sure you're ready to catch your ride!", timestamp: "Sep 16, 13:15 PM"},
-        {id:0, title:"Schedule Change", message:"The schedule for full circuit bus has been updated. Check the new timing.s", timestamp: "Sep 16, 12:18 AM"}
+        {id:0, title:"Schedule Change", message:"The bus schedule has been updated due to an upcoming freshers party. Check the new timings", timestamp: "Sep 16, 12:18 AM"},
+        {id:0, title:"Emergency Alert", message:"A saftey concern has been reported near the Great Hall. Stay vigilant and avoid the area until further notice.", timestamp: "Sep 16, 12:10 AM"},
     ]
 
     const Notification: React.FC<NotificationItem> = ({title, message, timestamp}) => {
-        const icon = title == "Bus Alert"? "bus" : "calendar";
+        let icon = "bus";
+        if (title == "Bus Alert"){
+            icon = "bus"
+        }
+        else if (title == "Schedule Change"){
+            icon = "calendar"
+        } else {
+            icon = "alert"
+        }
         return(
             <View style={styles.notificationContainer}>
                 <View style ={styles.notificationContent}>
@@ -71,12 +80,12 @@ const styles = StyleSheet.create({
       //backgroundColor:'#c4c5c6',
       flexDirection: "row",
       gap: 10,
-      paddingHorizontal: 10,
+      paddingHorizontal: 16,
       borderBottomWidth:1, 
     borderBottomColor: "#e0e0e0"
     },
     headerTitle: {
-      fontSize: 19,
+      fontSize: 24,
       fontWeight: "bold",
     },
     image: {
