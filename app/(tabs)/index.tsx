@@ -1,8 +1,22 @@
-import MapView, { LatLng, Marker, PROVIDER_DEFAULT, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { LatLng, Marker, PROVIDER_DEFAULT, PROVIDER_GOOGLE, Callout } from 'react-native-maps';
 import { Dimensions, StyleSheet, TouchableOpacity, View, Text, Platform, Linking } from 'react-native';
 import { GooglePlaceDetail, GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import MapViewDirections from 'react-native-maps-directions';
+import * as Location from 'expo-location';
+
+type CustomMarker = {
+  id: string;
+  name: string;
+  coordinate: LatLng;
+};
+
+const mockMarkers: CustomMarker[] = [
+  { id: '1', name: 'Station A', coordinate: { latitude: -26.191596389368428, longitude: 28.030743249532968 } },
+  { id: '2', name: 'Station B', coordinate: { latitude: -26.190380729086375, longitude: 28.02668363291219} },
+  { id: '3', name: 'Station C', coordinate: { latitude: -26.188031636154673, longitude: 28.0320882840975} },
+];
+
 
 const { width, height } = Dimensions.get("window");
 
@@ -47,11 +61,42 @@ function InputAutocomplete({
 }
 
 export default function App() {
-  const [origin, setOrigin] = useState<LatLng | null>(null);
+
+  const [origin, setOrigin] = useState<LatLng | null>(null); // set the origin to always be the cuurent location.
   const [destination, setDestination] = useState<LatLng | null>(null);
+  const [initialPosition, setInitialPosition] = useState<LatLng | null>(null);
   const [showDirections, setShowDirections] = useState(false);
+  const [markers, setMarkers] = useState<CustomMarker[]>([]);
 
   const mapref = useRef<MapView>(null);
+
+  useEffect(() => {
+    setMarkers(mockMarkers);
+  }, []);
+
+  const setMarkerAsDestination = (marker: CustomMarker) => {
+    setDestination(marker.coordinate);
+    moveTo(marker.coordinate);
+  };
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.error('Permission to access location was denied');
+        return;
+      }
+  
+      let location = await Location.getCurrentPositionAsync({});
+      const currentPosition = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      setInitialPosition(currentPosition);
+      setOrigin(currentPosition);
+      moveTo(currentPosition);
+    })();
+  }, []);
 
   const moveTo = async (position: LatLng) => {
     const camera = await mapref.current?.getCamera();
@@ -69,6 +114,7 @@ export default function App() {
     left: edgePaddingValue,
   };
 
+  // change to be the walking route as well as add accessebility
   const traceRoute = () => {
     if (origin && destination) {
       setShowDirections(true);
@@ -77,7 +123,7 @@ export default function App() {
   };
 
   const onPlaceSelected = (details: GooglePlaceDetail | null, flag: "origin" | "destination") => {
-    const set = flag === "origin" ? setOrigin : setDestination;
+    const set = flag === "destination" ? setDestination : setOrigin;
     const position = {
       latitude: details?.geometry.location.lat || 0,
       longitude: details?.geometry.location.lng || 0,
@@ -93,7 +139,7 @@ export default function App() {
 
       const url = Platform.select({
         ios: `http://maps.apple.com/?saddr=${originStr}&daddr=${destinationStr}`,
-        android: `google.navigation:q=${destinationStr}&mode=d`,
+        android: `google.navigation:q=${destinationStr}&mode=w`,
       });
 
       Linking.openURL(url as string)
@@ -119,13 +165,40 @@ export default function App() {
             apikey="AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs"
             strokeColor="#6644ff"
             strokeWidth={4}
+            mode="WALKING"
+            precision="high"
+            timePrecision="now"
+            onReady={result => {
+              console.log(`Walking Distance: ${result.distance} km`)
+              console.log(`Walking Duration: ${result.duration} min.`)
+            }}
           />
         )}
+
+        {markers.map((marker) => (
+            <Marker
+              key={marker.id}
+              coordinate={marker.coordinate}
+            >
+              <Callout>
+                <View>
+                  <Text>{marker.name}</Text>
+                  <TouchableOpacity 
+                    style={styles.calloutButton}
+                    onPress={() => setMarkerAsDestination(marker)}
+                  >
+                    <Text>Set as Destination</Text>
+                  </TouchableOpacity>
+                </View>
+              </Callout>
+            </Marker>
+          ))}
       </MapView>
       <View style={styles.searchContainer}>
-        <InputAutocomplete 
-          label="Origin" 
+      <InputAutocomplete 
+          label="Origin (Current Location)" 
           onPlaceSelected={(details) => onPlaceSelected(details, "origin")}
+          placeholder={origin ? `${origin.latitude}, ${origin.longitude}` : "Loading..."}
         />
         <InputAutocomplete 
           label="Destination" 
@@ -142,6 +215,7 @@ export default function App() {
       </View>
     </View>
   );
+
 }
 
 const styles = StyleSheet.create({
@@ -179,5 +253,11 @@ const styles = StyleSheet.create({
   },
   buttonText: { 
     textAlign: "center",
+  },
+  calloutButton: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 5,
   },
 });
