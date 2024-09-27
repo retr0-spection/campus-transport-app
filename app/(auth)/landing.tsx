@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   View,
   Text,
@@ -17,6 +17,8 @@ import ScooterAmico from "../../assets/images/Scooter-amico.png";
 import CityBus from "../../assets/images/citybus.png";
 import { AntDesign } from "@expo/vector-icons";
 import axios from "axios";
+import Animated, { Extrapolation, interpolate, interpolateColor, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { AnimatedScrollView } from "react-native-reanimated/lib/typescript/reanimated2/component/ScrollView";
 
 // create a component
 const SCREEN_WIDTH = Dimensions.get("screen").width;
@@ -24,93 +26,150 @@ const SCREEN_HEIGHT = Dimensions.get("screen").height;
 
 const LandingComponent = () => {
   const dispatch = useDispatch();
-  const [idx, setIdx] = React.useState(0);
+  const idx  = useSharedValue(0)
+  const offsetX = useSharedValue(0)
+  const AnimatedSafeAreaView = Animated.createAnimatedComponent(SafeAreaView)
+  const AnimatedAntDesign = Animated.createAnimatedComponent(AntDesign)
+  const scrollViewRef = React.useRef<AnimatedScrollView>()
 
-  const signIn = async () => {
-    const res = await axios.get("http://localhost:3000/api/login");
+  const animatedStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      offsetX.value,
+      [0, SCREEN_WIDTH, 2*SCREEN_WIDTH],
+      ['#173470', 'white', '#173470']
+    ),
+  }));
 
-    console.warn(res.data);
-  };
+  const animatedTextStyle = useAnimatedStyle(() => ({
+    color: interpolateColor(
+      offsetX.value,
+      [0, SCREEN_WIDTH, 2*SCREEN_WIDTH],
+      ['white', 'black', 'white']
+    ),
+    
+  }));
 
-  const onboadingInfo = [
-    {
-      title: "Need a Ride on Campus?",
-      description:
-        "Getting around just got easier. \n Discover convenient transportation options tailored for students.",
-      image: NavPana,
-      bgColor: "#173470",
-      textColor: "white",
-    },
-    {
-      title: "Find and Unlock Nearby Scooters",
-      description:
-        "Easily locate available scooters around campus and unlock them with just a tap.",
-      image: ScooterAmico,
-      bgColor: "white",
-      textColor: "black",
-    },
-    {
-      title: "Ride Safely and Stay on Time",
-      description:
-        "Whether on a scooter or a bus, we've got you covered. Enjoy reliable transportation every time.",
-      image: CityBus,
-      bgColor: "#173470",
-      textColor: "white",
-    },
-  ];
+
+
 
 
   const next = () => {
-    if (idx < 2){
-      setIdx(idx + 1)
-    }else{
+    scrollViewRef.current?.scrollTo({x:offsetX.value + SCREEN_WIDTH, animated:true})
+    if (offsetX.value == 2*SCREEN_WIDTH){
       router.replace('/(auth)/login')
+      return 
     }
+  }
+
+  const skip = () => {
+    router.replace('/(auth)/login')
+
+  }
+
+  const handleScrollEvent = (e) => {
+    const _ = e.nativeEvent.contentOffset.x
+    if (_ == 0){
+      idx.value == 0
+
+    }
+    if (_ == SCREEN_WIDTH){
+      idx.value == 1
+
+    }else if (_ == 2*SCREEN_WIDTH){
+      idx.value == 2
+    }
+
   }
 
 
 
   
   return (
-    <SafeAreaView style={{ backgroundColor: onboadingInfo[idx].bgColor }}>
-      <View
-        style={{
+    <AnimatedSafeAreaView style={animatedStyle}>
+      <Animated.ScrollView
+        ref={scrollViewRef}
+        style={[{
           height: "100%",
-          width: "100%",
-          backgroundColor: onboadingInfo[idx].bgColor,
           paddingHorizontal: "3%",
+          flexDirection:'row',
           paddingTop: "15%",
-        }}
+          
+        }, animatedStyle]}
+        showsHorizontalScrollIndicator={false}
+        horizontal
+        snapToOffsets={[0, SCREEN_WIDTH, 2*SCREEN_WIDTH]}
+        decelerationRate={'fast'}
+        onScroll={(e) => offsetX.value = e.nativeEvent.contentOffset.x}
+        onMomentumScrollEnd={handleScrollEvent}
       >
-        <Text style={{ fontSize: 40, color:onboadingInfo[idx].textColor, fontWeight: "bold" }}>
-          {onboadingInfo[idx].title}
-        </Text>
-        <View style={{ width: "80%", paddingVertical: "5%" }}>
-          <Text style={{ fontSize: 18, color: onboadingInfo[idx].textColor }}>
-            {onboadingInfo[idx].description}
+        <View style={{width:SCREEN_WIDTH}}>
+          <Text style={{ fontSize: 40, color:'white', fontWeight: "bold" }}>
+            Need a Ride on Campus?
           </Text>
+          <View style={{ width: "80%", paddingVertical: "5%" }}>
+            <Text style={{ fontSize: 18, color: 'white' }}>
+            Getting around just got easier. Discover convenient transportation options tailored for students.
+            </Text>
+          </View>
+          <View>
+            <Image
+              source={NavPana}
+              style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
+              resizeMode="contain"
+            />
+          </View>
         </View>
-        <View>
-          <Image
-            source={onboadingInfo[idx].image}
-            style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
-            resizeMode="contain"
-          />
+        <View style={{width:SCREEN_WIDTH}}>
+
+          <Text style={{ fontSize: 40, color:'black', fontWeight: "bold" }}>
+          Find and Unlock Nearby Scooters
+          </Text>
+          <View style={{ width: "80%", paddingVertical: "5%" }}>
+            <Text style={{ fontSize: 18, color:'black' }}>
+            Easily locate available scooters around campus and unlock them with just a tap.
+            </Text>
+          </View>
+          <View>
+            <Image
+              source={ScooterAmico}
+              style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
+              resizeMode="contain"
+            />
+          </View>
+        </View>
+        <View style={{width:SCREEN_WIDTH}}>
+
+          <Text style={{ fontSize: 40, color:'white', fontWeight: "bold" }}>
+          Ride Safely and Stay on Time
+          </Text>
+          <View style={{ width: "80%", paddingVertical: "5%" }}>
+            <Text style={{ fontSize: 18, color: 'white' }}>
+            Whether on a scooter or a bus, we've got you covered. Enjoy reliable transportation every time.
+            </Text>
+          </View>
+          <View>
+            <Image
+              source={CityBus}
+              style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
+              resizeMode="contain"
+            />
+          </View>
         </View>
 
+      </Animated.ScrollView>
         <View
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
             position: "absolute",
-            bottom: 0,
-            paddingHorizontal: "10%",
-            right: 0,
-            left: 0,
+            bottom: 30,
+            paddingHorizontal: "5%",
+            width:SCREEN_WIDTH,
+       
           }}
         >
-          <TouchableOpacity onPress={signIn}>
-            <Text style={{ color:onboadingInfo[idx].textColor, fontSize: 24 }}>skip</Text>
+          <TouchableOpacity onPress={skip}>
+            <Animated.Text style={[{ fontSize: 20, paddingRight:'10%' }, animatedTextStyle]}>Skip</Animated.Text>
           </TouchableOpacity>
           <View
             style={{
@@ -122,7 +181,7 @@ const LandingComponent = () => {
           >
             <View
               style={{
-                backgroundColor: idx == 0 ? "white" : 'gray',
+                backgroundColor: idx.value == 0 ? "white" : 'gray',
                 width: 15,
                 height: 15,
                 borderRadius: 7.5,
@@ -131,7 +190,7 @@ const LandingComponent = () => {
             />
             <View
               style={{
-                backgroundColor: idx == 1 ? "white" : 'gray',
+                backgroundColor: idx.value == 1 ? "white" : 'gray',
                 width: 15,
                 height: 15,
                 borderRadius: 7.5,
@@ -140,7 +199,7 @@ const LandingComponent = () => {
             />
             <View
               style={{
-                backgroundColor: idx == 2 ? "white" : 'gray',
+                backgroundColor: idx.value == 2 ? "white" : 'gray',
                 width: 15,
                 height: 15,
                 borderRadius: 7.5,
@@ -149,11 +208,10 @@ const LandingComponent = () => {
             />
           </View>
           <TouchableOpacity onPress={next}>
-            <AntDesign name="right" color={onboadingInfo[idx].textColor} size={26} />
+            <Animated.Text style={[{ fontSize: 20 }, animatedTextStyle]}>{idx.value == 2 ? 'Get started' : 'Continue'}</Animated.Text>
           </TouchableOpacity>
         </View>
-      </View>
-    </SafeAreaView>
+    </AnimatedSafeAreaView>
   );
 };
 
