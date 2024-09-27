@@ -165,7 +165,9 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
     padding: 8,
-    top: 20,
+    top: 40,
+    borderRadius:20
+
   },
   input: {
     borderColor: "#888",
