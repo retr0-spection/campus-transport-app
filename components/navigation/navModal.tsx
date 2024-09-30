@@ -1,17 +1,24 @@
-import { useRef, useState, useEffect } from "react";
-import { Dimensions, Linking, Platform, StyleSheet, Modal, View, Text, TouchableOpacity} from "react-native";
-import { GooglePlaceDetail } from "react-native-google-places-autocomplete";
-import MapView, {
-  LatLng,
-  Marker,
-  PROVIDER_DEFAULT,
-  PROVIDER_GOOGLE,
-} from "react-native-maps";
-import MapViewDirections from "react-native-maps-directions";
+import {  Linking, Platform, StyleSheet, Modal, View, Text, TouchableOpacity} from "react-native";
+
 
 const navModalComponent = (props) => {
 
     // props -origin -destination -destination name -distance -duration
+
+    const openNativeMapsApp = () => {
+        if (origin && destination) {
+          const originStr = `${origin.latitude},${origin.longitude}`;
+          const destinationStr = `${destination.latitude},${destination.longitude}`;
+    
+          const url = Platform.select({
+            ios: `http://maps.apple.com/?saddr=${originStr}&daddr=${destinationStr}`,
+            android: `google.navigation:q=${destinationStr}&mode=w`,
+          });
+    
+          Linking.openURL(url as string)
+            .catch((err) => console.error('An error occurred', err));
+        }
+      };
 
     const styles = StyleSheet.create({
         modalBackground: {

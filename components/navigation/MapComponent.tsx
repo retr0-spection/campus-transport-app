@@ -58,32 +58,34 @@ const MapViewComponent = (props) => {
   let mockMarkers: CustomMarker[] = []
   
   const apiUrl = 'http://ec2-52-40-184-137.us-west-2.compute.amazonaws.com/api/v1/navigation/poi'; 
-  
-  fetch(apiUrl)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json(); // Parse the JSON response
-    })
-    .then(data => {
-      console.log(data)
-      mockMarkers = data.map(item => ({
-        id: item.id,
-        name: item.name,
-        coordinate: {
+ 
+
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(apiUrl);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          console.log(data)
+          mockMarkers = data.map(item => ({
+              id: item.id,
+              name: item.name,
+              coordinate: {
           latitude: item.coordinates.latitude,
           longitude: item.coordinates.longitude,
         },
       }));
 
-      setMarkers(mockMarkers);
-
-      
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+        setMarkers(mockMarkers)
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+  
+      fetchData(); // Call the fetch function
+    }, []); 
 
 
   const traceRoute = () => {
