@@ -23,6 +23,7 @@ import MapViewDirections from "react-native-maps-directions";
 import MapViewComponent from "@/components/navigation/MapComponent";
 import Suggestions from "@/components/navigation/Suggestions";
 
+
 const { width, height } = Dimensions.get("window");
 
 const ASPECT_RATIO = width / height;
@@ -71,6 +72,7 @@ export default function App() {
   return (
     <View style={styles.container}>
      <MapViewComponent scrollEnabled={true} />
+
      
       <Suggestions />
     </View>

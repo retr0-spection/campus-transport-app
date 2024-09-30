@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Dimensions, Linking, Platform, StyleSheet } from "react-native";
+import { Dimensions, Linking, Platform, StyleSheet, View } from "react-native";
 import { GooglePlaceDetail } from "react-native-google-places-autocomplete";
 import MapView, {
   LatLng,
@@ -9,6 +9,7 @@ import MapView, {
 } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import * as Location from 'expo-location';
+import NavModalComponent from "@/components/navigation/navModal";
 
 
 const MapViewComponent = (props) => {
@@ -17,7 +18,7 @@ const MapViewComponent = (props) => {
   const [destination, setDestination] = useState<LatLng | null>(null);
   const [showDirections, setShowDirections] = useState(false);
   const [markers, setMarkers] = useState<CustomMarker[]>([]);
-
+  const [vsible, setVisible] = useState(false);
   
 
   const { width, height } = Dimensions.get("window");
@@ -103,8 +104,6 @@ const MapViewComponent = (props) => {
         moveTo(currentPosition);
       };
 
-
-  
       fetchData();
       getCurrentLocation(); 
     }, []); 
@@ -147,7 +146,7 @@ const MapViewComponent = (props) => {
   };
 
   return (
-
+    
     <MapView
       ref={mapref}
       style={{ width: "100%", height: "100%", ...props.style  }}
@@ -176,7 +175,10 @@ const MapViewComponent = (props) => {
             </Marker>
           ))  }
     </MapView>
-  );
+
+
+  
+);
 };
 
 export default MapViewComponent

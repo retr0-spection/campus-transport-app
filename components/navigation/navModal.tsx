@@ -1,9 +1,11 @@
 import {  Linking, Platform, StyleSheet, Modal, View, Text, TouchableOpacity} from "react-native";
 import { useRef, useState, useEffect } from "react";
 
-const navModalComponent = (props) => {
+
+const NavModalComponent = (props) => {
 
     // props -origin -destination -destination name -distance -duration
+    console.log("we in here")
     const {origin, destination, distance, duration, locationname, visible, setVisible} = props
 
     const openNativeMapsApp = () => {
@@ -91,5 +93,5 @@ const navModalComponent = (props) => {
 
 };
 
-export default navModalComponent;
+export default NavModalComponent;
 
