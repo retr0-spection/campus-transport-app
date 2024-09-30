@@ -4,6 +4,8 @@ import { GooglePlaceDetail, GooglePlacesAutocomplete } from 'react-native-google
 import { useState, useRef, useEffect } from 'react';
 import MapViewDirections from 'react-native-maps-directions';
 import * as Location from 'expo-location';
+import { Feather } from '@expo/vector-icons'; 
+
 
 type CustomMarker = {
   id: string;
@@ -45,16 +47,19 @@ function InputAutocomplete({
     <>
       <Text>{label}</Text>
       <GooglePlacesAutocomplete
+
         styles={{ textInput: styles.input }}
         placeholder={placeholder || ""}
         fetchDetails
         onPress={(data, details = null) => {
           onPlaceSelected(details);
         }}
+
         query={{
           key: 'AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs',
           language: 'en',
         }}
+
       />
     </>
   );
@@ -70,33 +75,34 @@ export default function App() {
 
   const mapref = useRef<MapView>(null);
 
-  useEffect(() => {
-    setMarkers(mockMarkers);
-  }, []);
+  
 
   const setMarkerAsDestination = (marker: CustomMarker) => {
+    console.log("Setting destination to:", marker); 
     setDestination(marker.coordinate);
     moveTo(marker.coordinate);
   };
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.error('Permission to access location was denied');
-        return;
-      }
-  
-      let location = await Location.getCurrentPositionAsync({});
-      const currentPosition = {
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      };
-      setInitialPosition(currentPosition);
-      setOrigin(currentPosition);
-      moveTo(currentPosition);
-    })();
+    setMarkers(mockMarkers);
+    getCurrentLocation();
   }, []);
+
+  const getCurrentLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.error('Permission to access location was denied');
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    const currentPosition = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+    setOrigin(currentPosition);
+    moveTo(currentPosition);
+  };
 
   const moveTo = async (position: LatLng) => {
     const camera = await mapref.current?.getCamera();
@@ -124,10 +130,12 @@ export default function App() {
 
   const onPlaceSelected = (details: GooglePlaceDetail | null, flag: "origin" | "destination") => {
     const set = flag === "destination" ? setDestination : setOrigin;
+
     const position = {
       latitude: details?.geometry.location.lat || 0,
       longitude: details?.geometry.location.lng || 0,
     };
+    
     set(position);
     moveTo(position);
   };
@@ -149,6 +157,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+
       <MapView 
         ref={mapref} 
         style={styles.map} 
@@ -175,34 +184,28 @@ export default function App() {
           />
         )}
 
-        {markers.map((marker) => (
+        {  markers.map((marker) => (
             <Marker
               key={marker.id}
               coordinate={marker.coordinate}
+              onPress = { ()=> setMarkerAsDestination(marker)}
             >
-              <Callout>
-                <View>
-                  <Text>{marker.name}</Text>
-                  <TouchableOpacity 
-                    style={styles.calloutButton}
-                    onPress={() => setMarkerAsDestination(marker)}
-                  >
-                    <Text>Set as Destination</Text>
-                  </TouchableOpacity>
-                </View>
-              </Callout>
             </Marker>
-          ))}
+          ))  }
       </MapView>
-      <View style={styles.searchContainer}>
-      <InputAutocomplete 
+
+      
+
+      {/* <InputAutocomplete 
           label="Origin (Current Location)" 
           onPlaceSelected={(details) => onPlaceSelected(details, "origin")}
           placeholder={origin ? `${origin.latitude}, ${origin.longitude}` : "Loading..."}
-        />
+        /> */}
+
         <InputAutocomplete 
           label="Destination" 
           onPlaceSelected={(details) => onPlaceSelected(details, "destination")}
+          placeholder={destination ? `${destination.latitude}, ${destination.longitude}` : " "}
         />
 
         <TouchableOpacity style={styles.button} onPress={traceRoute}>
@@ -212,7 +215,9 @@ export default function App() {
         <TouchableOpacity style={styles.button} onPress={openNativeMapsApp}>
           <Text style={styles.buttonText}>Open in Maps App</Text>
         </TouchableOpacity>
-      </View>
+
+      
+
     </View>
   );
 
