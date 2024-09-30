@@ -8,9 +8,11 @@ import MapView, {
   PROVIDER_GOOGLE,
 } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
+import * as Location from 'expo-location';
 
 
 const MapViewComponent = (props) => {
+
   const [origin, setOrigin] = useState<LatLng | null>(null);
   const [destination, setDestination] = useState<LatLng | null>(null);
   const [showDirections, setShowDirections] = useState(false);
@@ -61,6 +63,7 @@ const MapViewComponent = (props) => {
  
 
     useEffect(() => {
+
       const fetchData = async () => {
         try {
           const response = await fetch(apiUrl);
@@ -83,8 +86,27 @@ const MapViewComponent = (props) => {
           console.error('Error fetching data:', error);
         }
       };
+
+      const getCurrentLocation = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.error('Permission to access location was denied');
+          return;
+        }
+    
+        let location = await Location.getCurrentPositionAsync({});
+        const currentPosition = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        };
+        setOrigin(currentPosition);
+        moveTo(currentPosition);
+      };
+
+
   
-      fetchData(); // Call the fetch function
+      fetchData();
+      getCurrentLocation(); 
     }, []); 
 
 
