@@ -20,6 +20,8 @@ import {
 } from "react-native-google-places-autocomplete";
 import { useState, useRef } from "react";
 import MapViewDirections from "react-native-maps-directions";
+import MapViewComponent from "@/components/navigation/MapComponent";
+import Suggestions from "@/components/navigation/Suggestions";
 
 const { width, height } = Dimensions.get("window");
 
@@ -64,153 +66,13 @@ function InputAutocomplete({
 }
 
 export default function App() {
-  const [origin, setOrigin] = useState<LatLng | null>(null);
-  const [destination, setDestination] = useState<LatLng | null>(null);
-  const [showDirections, setShowDirections] = useState(false);
-
-  const mapref = useRef<MapView>(null);
-
-  const moveTo = async (position: LatLng) => {
-    const camera = await mapref.current?.getCamera();
-    if (camera) {
-      camera.center = position;
-      mapref.current?.animateCamera(camera, { duration: 1000 });
-    }
-  };
-
-  const edgePaddingValue = 10;
-  const edgePadding = {
-    top: edgePaddingValue,
-    right: edgePaddingValue,
-    bottom: edgePaddingValue,
-    left: edgePaddingValue,
-  };
-
-  const traceRoute = () => {
-    if (origin && destination) {
-      setShowDirections(true);
-      mapref.current?.fitToCoordinates([origin, destination], { edgePadding });
-    }
-  };
-
-  const onPlaceSelected = (
-    details: GooglePlaceDetail | null,
-    flag: "origin" | "destination"
-  ) => {
-    const set = flag === "origin" ? setOrigin : setDestination;
-    const position = {
-      latitude: details?.geometry.location.lat || 0,
-      longitude: details?.geometry.location.lng || 0,
-    };
-    set(position);
-    moveTo(position);
-  };
-
-  const openNativeMapsApp = () => {
-    if (origin && destination) {
-      const originStr = `${origin.latitude},${origin.longitude}`;
-      const destinationStr = `${destination.latitude},${destination.longitude}`;
-
-      const url = Platform.select({
-        ios: `http://maps.apple.com/?saddr=${originStr}&daddr=${destinationStr}`,
-        android: `google.navigation:q=${destinationStr}&mode=d`,
-      });
-
-      Linking.openURL(url as string).catch((err) =>
-        console.error("An error occurred", err)
-      );
-    }
-  };
+ 
 
   return (
     <View style={styles.container}>
-      <MapView
-        ref={mapref}
-        style={styles.map}
-        provider={
-          Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
-        }
-        initialRegion={INITIAL_POSITION}
-        showsUserLocation
-      >
-        {origin && <Marker coordinate={origin} />}
-        {destination && <Marker coordinate={destination} />}
-        {showDirections && origin && destination && (
-          <MapViewDirections
-            origin={origin}
-            destination={destination}
-            apikey="AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs"
-            strokeColor="#6644ff"
-            strokeWidth={4}
-          />
-        )}
-      </MapView>
-      <View style={styles.searchContainer}>
-        <InputAutocomplete
-          label="Origin"
-          onPlaceSelected={(details) => onPlaceSelected(details, "origin")}
-        />
-        <InputAutocomplete
-          label="Destination"
-          onPlaceSelected={(details) => onPlaceSelected(details, "destination")}
-        />
-
-        <TouchableOpacity style={styles.button} onPress={traceRoute}>
-          <Text style={styles.buttonText}>Trace Route</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={openNativeMapsApp}>
-          <Text style={styles.buttonText}>Open in Maps App</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={{ position: "absolute", bottom: 10, left: 0, right: 0 }}>
-        <ScrollView horizontal style={{ paddingHorizontal: 20 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              backgroundColor: "white",
-              width: Dimensions.get("window").width * 0.9,
-              justifyContent: "space-between",
-              padding:20,
-              borderRadius:20
-            }}
-          >
-            <View style={{height:'100%', justifyContent:'space-between'}}>
-              <View>
-                <Text style={{fontSize:20, fontWeight:'bold' }}>Matrix Rental Station</Text>
-                <Text style={{fontSize:16, fontWeight:'bold', color:'gray' }}>1.2 km</Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <Text>10 units available</Text>
-              </View>
-            </View>
-            <View>
-              <MapView
-                ref={mapref}
-                style={{ width: 100, height: 100, borderRadius:20 }}
-                provider={
-                  Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT
-                }
-                initialRegion={INITIAL_POSITION}
-                showsUserLocation
-                scrollEnabled={false}
-              >
-                {origin && <Marker coordinate={origin} />}
-                {destination && <Marker coordinate={destination} />}
-                {showDirections && origin && destination && (
-                  <MapViewDirections
-                    origin={origin}
-                    destination={destination}
-                    apikey="AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs"
-                    strokeColor="#6644ff"
-                    strokeWidth={4}
-                  />
-                )}
-              </MapView>
-            </View>
-          </View>
-        </ScrollView>
-      </View>
+     <MapViewComponent scrollEnabled={true} />
+     
+      <Suggestions />
     </View>
   );
 }
