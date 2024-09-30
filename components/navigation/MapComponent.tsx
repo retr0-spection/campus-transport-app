@@ -78,17 +78,13 @@ const MapViewComponent = (props) => {
       }));
 
       setMarkers(mockMarkers);
-      console.log(mockMarkers)
+
       
     })
     .catch(error => {
       console.error('Error:', error);
     });
 
-    useEffect(() => {
-      setMarkers(mockMarkers);
-      console.log(mockMarkers)
-    }, []);
 
   const traceRoute = () => {
     if (origin && destination) {
