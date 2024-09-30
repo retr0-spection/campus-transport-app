@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Dimensions, Linking, Platform, StyleSheet } from "react-native";
 import { GooglePlaceDetail } from "react-native-google-places-autocomplete";
 import MapView, {
@@ -9,10 +9,14 @@ import MapView, {
 } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 
+
 const MapViewComponent = (props) => {
   const [origin, setOrigin] = useState<LatLng | null>(null);
   const [destination, setDestination] = useState<LatLng | null>(null);
   const [showDirections, setShowDirections] = useState(false);
+  const [markers, setMarkers] = useState<CustomMarker[]>([]);
+
+  
 
   const { width, height } = Dimensions.get("window");
 
@@ -44,6 +48,47 @@ const MapViewComponent = (props) => {
     bottom: edgePaddingValue,
     left: edgePaddingValue,
   };
+
+  type CustomMarker = {
+    id: string;
+    name: string;
+    coordinate: LatLng;
+  };
+  
+  let mockMarkers: CustomMarker[] = []
+  
+  const apiUrl = 'http://ec2-52-40-184-137.us-west-2.compute.amazonaws.com/api/v1/navigation/poi'; 
+  
+  fetch(apiUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json(); // Parse the JSON response
+    })
+    .then(data => {
+      console.log(data)
+      mockMarkers = data.map(item => ({
+        id: item.id,
+        name: item.name,
+        coordinate: {
+          latitude: item.coordinates.latitude,
+          longitude: item.coordinates.longitude,
+        },
+      }));
+
+      setMarkers(mockMarkers);
+      console.log(mockMarkers)
+      
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+
+    useEffect(() => {
+      setMarkers(mockMarkers);
+      console.log(mockMarkers)
+    }, []);
 
   const traceRoute = () => {
     if (origin && destination) {
@@ -82,6 +127,7 @@ const MapViewComponent = (props) => {
   };
 
   return (
+
     <MapView
       ref={mapref}
       style={{ width: "100%", height: "100%", ...props.style  }}
@@ -101,6 +147,14 @@ const MapViewComponent = (props) => {
           strokeWidth={4}
         />
       )}
+
+   {  markers.map((marker) => (
+            <Marker
+              key={marker.id}
+              coordinate={marker.coordinate}
+            >
+            </Marker>
+          ))  }
     </MapView>
   );
 };
