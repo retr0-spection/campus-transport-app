@@ -1,10 +1,10 @@
 import {  Linking, Platform, StyleSheet, Modal, View, Text, TouchableOpacity} from "react-native";
-
+import { useRef, useState, useEffect } from "react";
 
 const navModalComponent = (props) => {
 
     // props -origin -destination -destination name -distance -duration
-    const {origin, destination, distance, duration, locationname} = props
+    const {origin, destination, distance, duration, locationname, visible, setVisible} = props
 
     const openNativeMapsApp = () => {
         if (origin && destination) {
@@ -19,6 +19,10 @@ const navModalComponent = (props) => {
           Linking.openURL(url as string)
             .catch((err) => console.error('An error occurred', err));
         }
+      };
+
+      const closeModal = () => {
+        setVisible(false); // Close the modal by updating the visibility state
       };
 
     const styles = StyleSheet.create({
@@ -57,6 +61,7 @@ const navModalComponent = (props) => {
         <Modal
         animationType="slide"
         transparent={true}
+        visible={visible}
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
@@ -69,11 +74,11 @@ const navModalComponent = (props) => {
 
             <Text>Distance: {distance ? `${distance.toFixed(3)} metres` : "Calculating..."}</Text>
 
-            <TouchableOpacity style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Show Directions</Text>
+            <TouchableOpacity style={styles.closeButton} onPress = {openNativeMapsApp}>
+              <Text style={styles.closeButtonText}>Navigate</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.closeButton}>
+            <TouchableOpacity style={styles.closeButton} onPress = {closeModal}>
               <Text style={styles.closeButtonText}> Cancel</Text>
             </TouchableOpacity>
 
