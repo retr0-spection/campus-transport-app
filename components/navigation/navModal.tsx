@@ -4,6 +4,7 @@ import {  Linking, Platform, StyleSheet, Modal, View, Text, TouchableOpacity} fr
 const navModalComponent = (props) => {
 
     // props -origin -destination -destination name -distance -duration
+    const {origin, destination, distance, duration, locationname} = props
 
     const openNativeMapsApp = () => {
         if (origin && destination) {
@@ -62,9 +63,11 @@ const navModalComponent = (props) => {
 
             <Text style={styles.modalTitle}>Destination: {destination ? "Your Destination" : "N/A"}</Text>
 
+            <Text>Destination: {destination ? locationname : "N/A"}</Text>
+
             <Text>Duration: {duration ? `${duration.toFixed(0)} minutes` : "Calculating..."}</Text>
 
-            <Text>Distance: {distance ? `${distance.toFixed(0)} minutes` : "Calculating..."}</Text>
+            <Text>Distance: {distance ? `${distance.toFixed(3)} metres` : "Calculating..."}</Text>
 
             <TouchableOpacity style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Show Directions</Text>
