@@ -4,8 +4,6 @@ import { GooglePlaceDetail, GooglePlacesAutocomplete } from 'react-native-google
 import { useState, useRef, useEffect } from 'react';
 import MapViewDirections from 'react-native-maps-directions';
 import * as Location from 'expo-location';
-import { Feather } from '@expo/vector-icons'; 
-
 
 type CustomMarker = {
   id: string;
@@ -47,19 +45,16 @@ function InputAutocomplete({
     <>
       <Text>{label}</Text>
       <GooglePlacesAutocomplete
-
         styles={{ textInput: styles.input }}
         placeholder={placeholder || ""}
         fetchDetails
         onPress={(data, details = null) => {
           onPlaceSelected(details);
         }}
-
         query={{
           key: 'AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs',
           language: 'en',
         }}
-
       />
     </>
   );
@@ -194,8 +189,7 @@ export default function App() {
           ))  }
       </MapView>
 
-      
-
+      <View style={styles.searchContainer}>
       {/* <InputAutocomplete 
           label="Origin (Current Location)" 
           onPlaceSelected={(details) => onPlaceSelected(details, "origin")}
@@ -215,8 +209,7 @@ export default function App() {
         <TouchableOpacity style={styles.button} onPress={openNativeMapsApp}>
           <Text style={styles.buttonText}>Open in Maps App</Text>
         </TouchableOpacity>
-
-      
+      </View>
 
     </View>
   );
