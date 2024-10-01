@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Bicycle from '../../../assets/images/bicycle.png'
+import Scooter from '../../../assets/images/scooter.png'
 import { useRouter } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';
 
-const BicycleRentalScreen = () => {
+const ScooterRentalScreen: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(true);
   const router = useRouter();
-  const navigation = useNavigation();
-
 
   const goBack = () => {
     router.back()
@@ -21,17 +18,16 @@ const BicycleRentalScreen = () => {
         <TouchableOpacity onPress={goBack}>
           <Text style={styles.backButton}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Bicycle</Text>
+        <Text style={styles.title}>Electric Scooter</Text>
       </View>
       <Image
-        source={Bicycle}
-        style={styles.bicycleImage}
+        source={Scooter}
+        style={styles.scooterImage}
         resizeMode="contain"
       />
       <Modal
         animationType="slide"
         transparent={true}
-        
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
@@ -39,15 +35,15 @@ const BicycleRentalScreen = () => {
           <View style={styles.modalContent}>
             <View style={styles.locationContainer}>
               <Text style={styles.locationIcon}>📍</Text>
-              <Text style={styles.locationText}>Sturrock Park Rental Station</Text>
+              <Text style={styles.locationText}>Matrix Rental Station</Text>
             </View>
             <View style={styles.availabilityContainer}>
               <Text style={styles.availabilityLabel}>Availability:</Text>
-              <Text style={styles.availabilityValue}>10 bicycles are currently available</Text>
+              <Text style={styles.availabilityValue}>10 scooters are currently available</Text>
             </View>
             <View style={styles.priceContainer}>
               <Text style={styles.priceLabel}>Rental Price:</Text>
-              <Text style={styles.priceValue}>49.9 Kudu bucks</Text>
+              <Text style={styles.priceValue}>39.9 Kudu bucks</Text>
             </View>
             <TouchableOpacity style={styles.rentButton} onPress={goBack}>
               <Text style={styles.rentButtonText}>Rent</Text>
@@ -58,7 +54,6 @@ const BicycleRentalScreen = () => {
     </SafeAreaView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -78,7 +73,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-  bicycleImage: {
+  scooterImage: {
     width: '100%',
     height: '50%',
   },
@@ -145,4 +140,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BicycleRentalScreen;
+export default ScooterRentalScreen;

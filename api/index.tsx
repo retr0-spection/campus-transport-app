@@ -20,10 +20,10 @@ const Auth = {
 
 const Schedules = {
     GetSchedules : async (config: AxiosRequestConfig): Promise<T> => {
-        return (await axios.get(domain + '/api/v1/bus-schedule/liveschedule?time=:00', config)).data
+        return (await axios.get(domain + '/api/v1/bus-schedule/liveschedule?time=08:00', config)).data
     },
     GetRoutes : async (config: AxiosRequestConfig): Promise<T> => {
-        return (await axios.get(domain + '/api/v1/bus-schedule/routes', config)).data
+        return (await axios.get(domain + '/api/v1/bus-schedule/routesnames', config)).data
     }
 }
 

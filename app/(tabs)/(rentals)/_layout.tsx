@@ -14,6 +14,8 @@ const Layout = () => {
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="confirmation" options={{ headerShown: false }} />
+        <Stack.Screen name="skateboard-rental" options={{ headerShown: false }} />
+        <Stack.Screen name="scooter-rental" options={{ headerShown: false , gestureEnabled: true} }/>
       </Stack>
     </>
   );
