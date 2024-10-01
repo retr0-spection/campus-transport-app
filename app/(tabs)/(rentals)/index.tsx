@@ -11,6 +11,7 @@ interface RentalItem {
   image: any; // You would use a proper type for images in a real app
   available: boolean;
   units: number;
+  route: string;
 }
 
 const rentalItems: RentalItem[] = [
@@ -19,18 +20,22 @@ const rentalItems: RentalItem[] = [
     image: ScooterImage,
     available: true,
     units: 10,
+    route: '/(rentals)/scooter-rental',
+
   },
   {
     name: 'Electric Skateboard',
     image: Skateboard,
     available: true,
     units: 3,
+    route: '/(rentals)/skateboard-rental',
   },
   {
     name: 'Bicycle',
     image: Bicycle,
     available: true,
     units: 25,
+    route: '/(rentals)/confirmation',
   },
 ];
 
@@ -39,8 +44,8 @@ const RentalScreen: React.FC = () => {
 
 
 
-    const navigate = () => {
-      router.push('/(rentals)/confirmation')
+    const navigate = (route: string) => {
+      router.push(route);
     }
 
   return (
@@ -56,7 +61,7 @@ const RentalScreen: React.FC = () => {
                 {item.available ? 'Available' : 'Unavailable'}
               </Text>
               <Text style={styles.unitsText}>{item.units} units available</Text>
-              <TouchableOpacity style={styles.rentButton} onPress={navigate}>
+              <TouchableOpacity style={styles.rentButton} onPress={() =>navigate(item.route)}>
                 <Text style={styles.rentButtonText}>Rent</Text>
               </TouchableOpacity>
             </View>
