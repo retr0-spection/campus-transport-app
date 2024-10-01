@@ -60,33 +60,7 @@ const NavModalComponent = (props) => {
 
     return (
 
-        <Modal
-        animationType="slide"
-        transparent={true}
-        visible={visible}
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContainer}>
-
-            <Text style={styles.modalTitle}>Destination: {destination ? "Your Destination" : "N/A"}</Text>
-
-            <Text>Destination: {destination ? locationname : "N/A"}</Text>
-
-            <Text>Duration: {duration ? `${duration.toFixed(0)} minutes` : "Calculating..."}</Text>
-
-            <Text>Distance: {distance ? `${distance.toFixed(3)} metres` : "Calculating..."}</Text>
-
-            <TouchableOpacity style={styles.closeButton} onPress = {openNativeMapsApp}>
-              <Text style={styles.closeButtonText}>Navigate</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.closeButton} onPress = {closeModal}>
-              <Text style={styles.closeButtonText}> Cancel</Text>
-            </TouchableOpacity>
-
-          </View>
-        </View>
-      </Modal>
+        
     )
 
    

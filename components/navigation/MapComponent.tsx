@@ -21,6 +21,7 @@ const MapViewComponent = (props) => {
   const markers = props.markers || []
 
   
+  
 
   const { width, height } = Dimensions.get("window");
 
@@ -77,7 +78,7 @@ const MapViewComponent = (props) => {
     moveTo(position);
   };
 
-  const openNativeMapsApp = () => {
+  const openNativeMapsApp = (origin, destination) => {
     if (origin && destination) {
       const originStr = `${origin.latitude},${origin.longitude}`;
       const destinationStr = `${destination.latitude},${destination.longitude}`;
@@ -116,7 +117,7 @@ const MapViewComponent = (props) => {
       )}
 
    {  markers.map((marker) => (
-        <CustomMarker id={marker.id} name={marker.name} coordinate={marker.coordinate} type={marker.type} />
+        <CustomMarker id={marker.id} name={marker.name} openNativeMapsApp={openNativeMapsApp} coordinate={marker.coordinate} origin={INITIAL_POSITION} type={marker.type} />
            
           ))  }
     </MapView>

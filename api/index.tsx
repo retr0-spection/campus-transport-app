@@ -23,7 +23,7 @@ const Schedules = {
         return (await axios.get(domain + '/api/v1/bus-schedule/liveschedule?time=08:00', config)).data
     },
     GetRoutes : async (config: AxiosRequestConfig): Promise<T> => {
-        return (await axios.get(domain + '/api/v1/bus-schedule/routesnames', config)).data
+        return (await axios.get(domain + '/api/v1/bus-schedule/routenames', config)).data
     }
 }
 

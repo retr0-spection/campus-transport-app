@@ -15,8 +15,8 @@ const App = () => {
   const fetchLiveSchedule = async () => {
     try {
         
-      const response = await API.V1.Schedules.GetSchedules({});
-      setDepartures(response); // Assuming the API returns a list of departures
+      // const response = await API.V1.Schedules.GetSchedules({});
+      // setDepartures(response); // Assuming the API returns a list of departures
     } catch (error) {
       Alert.alert('Error', 'Failed to fetch live schedule.');
       console.error(error);
@@ -26,7 +26,8 @@ const App = () => {
   // Fetch routes from API
   const fetchRoutes = async () => {
     try {
-      const response =  await API.V1.Schedules.GetRoutes({});
+      const response =  await API.V1.Schedules.GetRoutes({}).data;
+      console.warn(response)
       setRoutes(response); // Assuming the API returns a list of routes
     } catch (error) {
       Alert.alert('Error', 'Failed to fetch routes.');
@@ -74,7 +75,7 @@ const App = () => {
       >
         <View style={styles.modalView}>
           <Text style={styles.modalTitle}>Select Route</Text>
-          {routes.map((route, index) => (
+          {routes?.map((route, index) => (
             <TouchableOpacity
               key={index}
               style={styles.routeOption}

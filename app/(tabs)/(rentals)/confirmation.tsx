@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Bicycle from '../../../assets/images/bicycle.png'
@@ -55,6 +55,7 @@ const BicycleRentalScreen = () => {
           </View>
         </View>
       </Modal>
+    
     </SafeAreaView>
   );
 };
