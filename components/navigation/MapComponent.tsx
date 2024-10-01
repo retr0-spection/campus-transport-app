@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Dimensions, Linking, Platform, StyleSheet, View } from "react-native";
+import { Dimensions, Linking, Platform, StyleSheet, Text } from "react-native";
 import { GooglePlaceDetail } from "react-native-google-places-autocomplete";
 import MapView, {
   LatLng,
@@ -8,8 +8,9 @@ import MapView, {
   PROVIDER_GOOGLE,
 } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
-import * as Location from 'expo-location';
-import NavModalComponent from "@/components/navigation/navModal";
+import CustomMarker from "./CustomMarker";
+
+
 
 
 const MapViewComponent = (props) => {
@@ -17,8 +18,8 @@ const MapViewComponent = (props) => {
   const [origin, setOrigin] = useState<LatLng | null>(null);
   const [destination, setDestination] = useState<LatLng | null>(null);
   const [showDirections, setShowDirections] = useState(false);
-  const [markers, setMarkers] = useState<CustomMarker[]>([]);
-  const [vsible, setVisible] = useState(false);
+  const markers = props.markers || []
+
   
 
   const { width, height } = Dimensions.get("window");
@@ -52,62 +53,9 @@ const MapViewComponent = (props) => {
     left: edgePaddingValue,
   };
 
-  type CustomMarker = {
-    id: string;
-    name: string;
-    coordinate: LatLng;
-  };
-  
-  let mockMarkers: CustomMarker[] = []
-  
-  const apiUrl = 'http://ec2-52-40-184-137.us-west-2.compute.amazonaws.com/api/v1/navigation/poi'; 
  
 
-    useEffect(() => {
-
-      const fetchData = async () => {
-        try {
-          const response = await fetch(apiUrl);
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          console.log(data)
-          mockMarkers = data.map(item => ({
-              id: item.id,
-              name: item.name,
-              coordinate: {
-          latitude: item.coordinates.latitude,
-          longitude: item.coordinates.longitude,
-        },
-      }));
-
-        setMarkers(mockMarkers)
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      };
-
-      const getCurrentLocation = async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          console.error('Permission to access location was denied');
-          return;
-        }
-    
-        let location = await Location.getCurrentPositionAsync({});
-        const currentPosition = {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        };
-        setOrigin(currentPosition);
-        moveTo(currentPosition);
-      };
-
-      fetchData();
-      getCurrentLocation(); 
-    }, []); 
-
+  
 
   const traceRoute = () => {
     if (origin && destination) {
@@ -168,11 +116,8 @@ const MapViewComponent = (props) => {
       )}
 
    {  markers.map((marker) => (
-            <Marker
-              key={marker.id}
-              coordinate={marker.coordinate}
-            >
-            </Marker>
+        <CustomMarker id={marker.id} name={marker.name} coordinate={marker.coordinate} type={marker.type} />
+           
           ))  }
     </MapView>
 
