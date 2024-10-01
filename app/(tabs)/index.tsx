@@ -18,11 +18,13 @@ import {
   GooglePlaceDetail,
   GooglePlacesAutocomplete,
 } from "react-native-google-places-autocomplete";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import MapViewDirections from "react-native-maps-directions";
 import MapViewComponent from "@/components/navigation/MapComponent";
 import Suggestions from "@/components/navigation/Suggestions";
 
+
+import { requestNotificationPermission, setupNotifications } from '../../firebaseservices/firebaseService';
 
 const { width, height } = Dimensions.get("window");
 
@@ -67,7 +69,66 @@ function InputAutocomplete({
 }
 
 export default function App() {
- 
+
+  /* useEffect(() => {
+    const userId = 'user1';
+    requestNotificationPermission(userId);
+    setupNotifications();
+  }, []); */
+
+  const [origin, setOrigin] = useState<LatLng | null>(null);
+  const [destination, setDestination] = useState<LatLng | null>(null);
+  const [showDirections, setShowDirections] = useState(false);
+
+  const mapref = useRef<MapView>(null);
+
+  const moveTo = async (position: LatLng) => {
+    const camera = await mapref.current?.getCamera();
+    if (camera) {
+      camera.center = position;
+      mapref.current?.animateCamera(camera, { duration: 1000 });
+    }
+  };
+
+  const edgePaddingValue = 10;
+  const edgePadding = {
+    top: edgePaddingValue,
+    right: edgePaddingValue,
+    bottom: edgePaddingValue,
+    left: edgePaddingValue,
+  };
+
+  const traceRoute = () => {
+    if (origin && destination) {
+      setShowDirections(true);
+      mapref.current?.fitToCoordinates([origin, destination], { edgePadding });
+    }
+  };
+
+  const onPlaceSelected = (details: GooglePlaceDetail | null, flag: "origin" | "destination") => {
+    const set = flag === "origin" ? setOrigin : setDestination;
+    const position = {
+      latitude: details?.geometry.location.lat || 0,
+      longitude: details?.geometry.location.lng || 0,
+    };
+    set(position);
+    moveTo(position);
+  };
+
+  const openNativeMapsApp = () => {
+    if (origin && destination) {
+      const originStr = `${origin.latitude},${origin.longitude}`;
+      const destinationStr = `${destination.latitude},${destination.longitude}`;
+
+      const url = Platform.select({
+        ios: `http://maps.apple.com/?saddr=${originStr}&daddr=${destinationStr}`,
+        android: `google.navigation:q=${destinationStr}&mode=d`,
+      });
+
+      Linking.openURL(url as string)
+        .catch((err) => console.error('An error occurred', err));
+    }
+  };
 
   return (
     <View style={styles.container}>
