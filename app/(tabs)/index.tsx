@@ -1,19 +1,41 @@
-import MapView, { LatLng, Marker, PROVIDER_DEFAULT, PROVIDER_GOOGLE } from 'react-native-maps';
-import { Dimensions, StyleSheet, TouchableOpacity, View, Text, Platform, Linking } from 'react-native';
-import { GooglePlaceDetail, GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { useState, useRef } from 'react';
-import MapViewDirections from 'react-native-maps-directions';
+import MapView, {
+  LatLng,
+  Marker,
+  PROVIDER_DEFAULT,
+  PROVIDER_GOOGLE,
+} from "react-native-maps";
+import {
+  Dimensions,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Text,
+  Platform,
+  Linking,
+  ScrollView,
+} from "react-native";
+import {
+  GooglePlaceDetail,
+  GooglePlacesAutocomplete,
+} from "react-native-google-places-autocomplete";
+import { useState, useRef, useEffect } from "react";
+import MapViewDirections from "react-native-maps-directions";
+import MapViewComponent from "@/components/navigation/MapComponent";
+import Suggestions from "@/components/navigation/Suggestions";
+
+
+import { requestNotificationPermission, setupNotifications } from '../../firebaseservices/firebaseService';
 
 const { width, height } = Dimensions.get("window");
 
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.02;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-const INITIAL_POSITION = { 
+const INITIAL_POSITION = {
   latitude: -26.191632311834038,
   longitude: 28.030281354690963,
   latitudeDelta: LATITUDE_DELTA,
-  longitudeDelta: LONGITUDE_DELTA 
+  longitudeDelta: LONGITUDE_DELTA,
 };
 
 type InputAutocompleteProps = {
@@ -38,8 +60,8 @@ function InputAutocomplete({
           onPlaceSelected(details);
         }}
         query={{
-          key: 'AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs',
-          language: 'en',
+          key: "AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs",
+          language: "en",
         }}
       />
     </>
@@ -47,6 +69,13 @@ function InputAutocomplete({
 }
 
 export default function App() {
+
+  /* useEffect(() => {
+    const userId = 'user1';
+    requestNotificationPermission(userId);
+    setupNotifications();
+  }, []); */
+
   const [origin, setOrigin] = useState<LatLng | null>(null);
   const [destination, setDestination] = useState<LatLng | null>(null);
   const [showDirections, setShowDirections] = useState(false);
@@ -103,43 +132,10 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <MapView 
-        ref={mapref} 
-        style={styles.map} 
-        provider={Platform.OS === 'android' ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
-        initialRegion={INITIAL_POSITION} 
-        showsUserLocation
-      >
-        {origin && <Marker coordinate={origin} />}
-        {destination && <Marker coordinate={destination} />}
-        {showDirections && origin && destination && (
-          <MapViewDirections
-            origin={origin}
-            destination={destination}
-            apikey="AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs"
-            strokeColor="#6644ff"
-            strokeWidth={4}
-          />
-        )}
-      </MapView>
-      <View style={styles.searchContainer}>
-        <InputAutocomplete 
-          label="Origin" 
-          onPlaceSelected={(details) => onPlaceSelected(details, "origin")}
-        />
-        <InputAutocomplete 
-          label="Destination" 
-          onPlaceSelected={(details) => onPlaceSelected(details, "destination")}
-        />
+     <MapViewComponent scrollEnabled={true} />
 
-        <TouchableOpacity style={styles.button} onPress={traceRoute}>
-          <Text style={styles.buttonText}>Trace Route</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={openNativeMapsApp}>
-          <Text style={styles.buttonText}>Open in Maps App</Text>
-        </TouchableOpacity>
-      </View>
+     
+      <Suggestions />
     </View>
   );
 }
@@ -149,7 +145,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   map: {
     width: Dimensions.get("window").width,
@@ -166,8 +162,7 @@ const styles = StyleSheet.create({
     elevation: 4,
     padding: 8,
     top: 40,
-    borderRadius:20
-
+    borderRadius: 20,
   },
   input: {
     borderColor: "#888",
@@ -179,7 +174,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     borderRadius: 4,
   },
-  buttonText: { 
+  buttonText: {
     textAlign: "center",
   },
 });

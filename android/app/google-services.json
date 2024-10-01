@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "899225036585",
+    "project_id": "kudunav-notifications",
+    "storage_bucket": "kudunav-notifications.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:899225036585:android:e1d493b6f779c4a41e3938",
+        "android_client_info": {
+          "package_name": "com.campustransport.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiEOM901VR2F7m2bg3Toq8bcanzRRgMrE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
