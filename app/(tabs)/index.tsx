@@ -13,19 +13,22 @@ import {
   Platform,
   Linking,
   ScrollView,
+  TextInput,
 } from "react-native";
 import {
   GooglePlaceDetail,
   GooglePlacesAutocomplete,
 } from "react-native-google-places-autocomplete";
-import { useState, useRef, useEffect } from "react";
+import { requestNotificationPermission, setupNotifications } from '../../firebaseservices/firebaseService';
+
+import React, { useState, useRef } from "react";
 import MapViewDirections from "react-native-maps-directions";
 import MapViewComponent from "@/components/navigation/MapComponent";
 import Suggestions from "@/components/navigation/Suggestions";
-
-
-import { requestNotificationPermission, setupNotifications } from '../../firebaseservices/firebaseService';
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import SearchComponent from "@/components/navigation/SearchComponent";
+import * as Location from 'expo-location';
+import { Ionicons } from "@expo/vector-icons";
 const { width, height } = Dimensions.get("window");
 
 const ASPECT_RATIO = width / height;
@@ -67,6 +70,14 @@ function InputAutocomplete({
     </>
   );
 }
+
+
+export interface CustomMarker  {
+  id: string;
+  name: string;
+  coordinate: LatLng;
+  type: string;
+};
 
 export default function App() {
 
@@ -129,13 +140,75 @@ export default function App() {
         .catch((err) => console.error('An error occurred', err));
     }
   };
+  const insets = useSafeAreaInsets()
+  const [expandSearch, setExpandSearch] = React.useState(true)
+  const [markers, setMarkers] = useState<CustomMarker[]>([]);
+
+  
+  
+  let mockMarkers: CustomMarker[] = []
+  
+  const apiUrl = 'http://ec2-52-40-184-137.us-west-2.compute.amazonaws.com/api/v1/navigation/poi'; 
+ 
+
+  React.useEffect(() => {
+
+      const fetchData = async () => {
+        try {
+          const response = await fetch(apiUrl);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          mockMarkers = data.map(item => ({
+              id: item.id,
+              name: item.name,
+              type: item.type,
+              coordinate: {
+          latitude: item.coordinates.latitude,
+          longitude: item.coordinates.longitude,
+        },
+      }));
+
+        setMarkers(mockMarkers)
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+
+      const getCurrentLocation = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.error('Permission to access location was denied');
+          return;
+        }
+    
+        let location = await Location.getCurrentPositionAsync({});
+        const currentPosition = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        };
+      };
+
+
+  
+      fetchData();
+      getCurrentLocation(); 
+    }, []); 
+
+
 
   return (
     <View style={styles.container}>
-     <MapViewComponent scrollEnabled={true} />
-
-     
-      <Suggestions />
+     <MapViewComponent scrollEnabled={true} markers={markers} />
+      <View style={{position:'absolute', top:insets.top,left:0, right:0,paddingHorizontal:30, flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
+        <View style={{backgroundColor:'white', padding:5, borderRadius:13}}>
+          <Ionicons name="notifications-outline" size={27} />
+        </View>
+        <TextInput placeholder="Search places" style={{backgroundColor:'white', width:Dimensions.get('window').width * 0.75, padding:10, borderRadius:10}}/>
+      </View>
+      <Suggestions markers={markers} />
+      {/* <SearchComponent /> */}
     </View>
   );
 }
