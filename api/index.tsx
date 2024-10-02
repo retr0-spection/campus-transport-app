@@ -10,6 +10,7 @@ interface VerifyResponse {
     message:string;
     token:string;
     refresh_token:string;
+    email:string
 }
 
 const Auth = {

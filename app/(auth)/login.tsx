@@ -80,11 +80,11 @@ const LoginComponent = () => {
           'X-Google-Token':_.data?.idToken
         }
       }
-      const {token, refresh_token} = await API.V1.Auth.Verify(config)
+      const {token, refresh_token, email} = await API.V1.Auth.Verify(config)
 
       console.log(token, refresh_token)
 
-      dispatch(setProfile({token, refresh_token}))
+      dispatch(setProfile({token, refresh_token, email}))
       dispatch(setAuthenticated(true))
 
       navigation.replace("(tabs)");
