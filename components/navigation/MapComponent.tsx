@@ -11,7 +11,7 @@ import MapViewDirections from "react-native-maps-directions";
 import CustomMarker from "./CustomMarker";
 
 const MapViewComponent = React.forwardRef((props, ref) => {
-  const {origin, destination, showDirections} = props
+  const {origin, destination, showDirections, mode, setMode, zoom} = props
   const markers = props.markers || [];
 
   const { width, height } = Dimensions.get("window");
@@ -65,6 +65,7 @@ const MapViewComponent = React.forwardRef((props, ref) => {
       showsBuildings={true}
       showsIndoors={true}
       showsIndoorLevelPicker={true}
+      
     >
       {/* {origin && <Marker coordinate={origin} />} */}
       {destination && <CustomMarker
@@ -82,7 +83,11 @@ const MapViewComponent = React.forwardRef((props, ref) => {
           apikey="AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs"
           strokeColor="#6644ff"
           strokeWidth={4}
+          optimizeWaypoints={true}
+          mode={mode}
+          onError={() => setMode("WALKING")}
         />
+        
       )}
 
       {/* {markers.map((marker) => {

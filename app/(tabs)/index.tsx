@@ -97,6 +97,7 @@ export default function App() {
   const [query, setQuery] = React.useState<String>("");
   const [expandSearch, setExpandSearch] = React.useState(true);
   const [markers, setMarkers] = useState<CustomMarker[]>([]);
+  const [mode, setMode] = useState<String>("WALKING");
   const modalRef = useRef();
   const router = useRouter();
   const queryRef = useRef()
@@ -110,7 +111,9 @@ export default function App() {
   const moveTo = async (position: LatLng) => {
     const camera = await mapref.current?.getCamera();
     if (camera) {
-      camera.center = position;
+      const _position = {...position, latitude:position.latitude - 5e-3}
+      camera.center = _position;
+      camera.altitude = 5000
       mapref.current?.animateCamera(camera);
     }
   };
@@ -187,6 +190,7 @@ export default function App() {
   React.useEffect(() => {
     if (destination) {
       traceRoute();
+      modalRef.current.show()
     }
   }, [destination]);
 
@@ -240,6 +244,8 @@ export default function App() {
         showDirections={showDirections}
         markers={markers}
         modalRef={modalRef}
+        mode={mode}
+        setMode={setMode}
       />
       <View
         style={{
@@ -290,6 +296,8 @@ export default function App() {
         ref={modalRef}
         onCloseCallBack={onCloseCallBack}
         destination={destination}
+        origin={origin}
+        setMode={setMode}
       />
     </View>
   );
