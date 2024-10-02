@@ -70,16 +70,17 @@ const _load = async () => {
       style={{
         flexDirection: "row",
         backgroundColor: "white",
-        width: Dimensions.get("window").width * 0.9,
+        width: Dimensions.get("screen").width * 0.9,
         justifyContent: "space-between",
         padding: 20,
         borderRadius: 20,
-        marginHorizontal: 20,
+        marginHorizontal:Dimensions.get("screen").width * 0.05,
+        gap:15
       }}
     >
-      <View style={{ height: "100%", justifyContent: "space-between" }}>
+      <View style={{ height: "100%", justifyContent: "space-between", width:'40%' }}>
         <View>
-          <Text style={{ fontSize: 20, fontWeight: "bold", overflow:'hidden' }}>
+          <Text ellipsizeMode="tail" numberOfLines={2} style={{ fontSize: 20, fontWeight: "bold", overflow:'hidden' }}>
             {marker.name}
           </Text>
           <Text style={{ fontSize: 16, fontWeight: "bold", color: "gray" }}>
@@ -90,7 +91,7 @@ const _load = async () => {
           <Text>{distance}</Text>
         </View>
       </View>
-      <View>
+      <View style={{width:'60%'}}>
         <MapComponent
           ref={mapRef}
           scrollEnabled={false}
@@ -122,7 +123,7 @@ const Suggestions = ({
         horizontal
         showsHorizontalScrollIndicator={false}
         snapToAlignment="center"
-        snapToInterval={Dimensions.get("window").width}
+        snapToInterval={Dimensions.get("screen").width}
         decelerationRate={"fast"}
       >
         {markers?.map((marker) => <SuggestionComponent queryRef={queryRef} modalRef={modalRef} origin={origin} highlightLocation={highlightLocation} editText={editText} marker={marker} />)}
