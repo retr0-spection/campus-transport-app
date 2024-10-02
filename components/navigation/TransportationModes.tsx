@@ -12,7 +12,7 @@ const TransportationModes = ({activeIndex, setActiveIndex}) => {
   ];
 
   return (
-    <View style={{ flexDirection: 'row', paddingVertical:10 }}>
+    <View style={{ flexDirection: 'row', paddingVertical:10, justifyContent:'space-between'}}>
       {modes.map((mode, index) => (
         <TouchableOpacity
           key={index}

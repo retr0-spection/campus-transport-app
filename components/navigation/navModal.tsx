@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   Button,
+  useColorScheme,
 } from "react-native";
 import React, { useRef, useState, useEffect } from "react";
 import ActionSheet from "react-native-actions-sheet";
@@ -14,6 +15,7 @@ import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
 import TransportationModes from "./TransportationModes";
 import MapComponent from "./MapComponent";
+import { Colors } from "@/constants/Colors";
 
 const googleMapsApiKey = "AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs";
 const googlePlacesApiKey = "AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs";
@@ -24,6 +26,7 @@ const NavModalComponent = React.forwardRef((props, ref) => {
   const { origin, destination, onCloseCallBack, setMode } = props;
   const [activeIndex, setActiveIndex] = useState(0);
   const mapRef = useRef()
+  const colorScheme = useColorScheme();
 
   const getDistanceAndDestinationInfo = async (origin, destination) => {
     const originCoords = `${origin.latitude},${origin.longitude}`;
@@ -136,7 +139,7 @@ const NavModalComponent = React.forwardRef((props, ref) => {
 
   return (
     <ActionSheet
-      containerStyle={{ height: "50%" }}
+      containerStyle={{ height: "50%", backgroundColor:Colors[colorScheme ?? 'light'].background }}
       ref={ref}
       onClose={onCloseCallBack}
     >
@@ -144,10 +147,10 @@ const NavModalComponent = React.forwardRef((props, ref) => {
         style={{ padding: 20, justifyContent: "space-between", height: "100%" }}
       >
         <View>
-          <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+          <Text style={{ fontWeight: "bold", fontSize: 20, color:Colors[colorScheme ?? 'light'].text }}>
             {destination?.name}
           </Text>
-          <Text style={{ fontSize: 18, fontWeight: "medium" }}>{distance}</Text>
+          <Text style={{ fontSize: 18, fontWeight: "medium", color:Colors[colorScheme ?? 'light'].text }}>{distance}</Text>
           <Text style={{ fontWeight: "bold", color: "gray" }}>
             {destinationInfo?.vicinity}
           </Text>

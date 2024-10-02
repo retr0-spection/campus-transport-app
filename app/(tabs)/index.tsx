@@ -14,6 +14,7 @@ import {
   Linking,
   ScrollView,
   TextInput,
+  useColorScheme,
 } from "react-native";
 import {
   GooglePlaceDetail,
@@ -34,6 +35,7 @@ import * as Location from "expo-location";
 import { Ionicons } from "@expo/vector-icons";
 import NavModalComponent from "@/components/navigation/navModal";
 import { useRouter } from "expo-router";
+import { Colors } from "@/constants/Colors";
 const { width, height } = Dimensions.get("window");
 
 const ASPECT_RATIO = width / height;
@@ -101,6 +103,8 @@ export default function App() {
   const modalRef = useRef();
   const router = useRouter();
   const queryRef = useRef()
+  const colorScheme = useColorScheme();
+
   const editText = useCallback((text) => {
     queryRef.current?.setNativeProps({text});
     setQuery(text)
@@ -203,7 +207,7 @@ export default function App() {
     const _ = markers.filter((marker) => marker.name.toLowerCase().includes(query.toLowerCase()));
 
     return (
-      <View style={{ borderRadius: 10, marginTop: 10 }}>
+      <View style={{ borderRadius: 10, marginTop: 10, backgroundColor:Colors[colorScheme ?? 'light'].background }}>
         {_.map((item, index) => {
           return (
             <TouchableOpacity
@@ -215,7 +219,7 @@ export default function App() {
             }}
             activeOpacity={0.7}
               style={{
-                backgroundColor: "white",
+         
                 borderTopLeftRadius: index == 0 ? 10 : 0,
                 borderTopRightRadius: index == 0 ? 10 : 0,
                 borderBottomLeftRadius: index == _.length - 1 ? 10 : 0,
@@ -226,7 +230,7 @@ export default function App() {
                 borderColor: "#bebebe",
               }}
             >
-              <Text>{item.name}</Text>
+              <Text style={{color:Colors[colorScheme ?? 'light'].text}}>{item.name}</Text>
             </TouchableOpacity>
           );
         })}
@@ -258,25 +262,27 @@ export default function App() {
           justifyContent: "space-between",
         }}
       >
-        <View style={{ borderRadius: 20 }}>
+        <View style={{flexGrow:0, alignSelf:'flex-start',flexShrink:0, borderRadius: 10,backgroundColor: Colors[colorScheme ?? 'light'].background, padding: 5  }}>
           <Ionicons
             name="notifications-outline"
             size={27}
-            style={{ backgroundColor: "white", padding: 5 }}
             onPress={() => router.push("/notifications")}
+            color={Colors[colorScheme ?? 'light'].text}
           />
         </View>
         <View>
           <TextInput
             ref={queryRef}
             placeholder="Search places on campus"
+            placeholderTextColor={'gray'}
             onChangeText={editText}
             onFocus={() => setExpandSearch(true)}
             onBlur={() => setExpandSearch(false)}
             autoCorrect={false}
             autoComplete="off"
             style={{
-              backgroundColor: "white",
+              backgroundColor:Colors[colorScheme ?? 'light'].background,
+              color:Colors[colorScheme ?? 'light'].text,
               width: Dimensions.get("window").width * 0.75,
               padding: 10,
               borderRadius: 10,

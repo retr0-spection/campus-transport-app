@@ -1,4 +1,4 @@
-import { Dimensions, ScrollView, Text, View } from "react-native";
+import { Dimensions, ScrollView, Text, useColorScheme, View } from "react-native";
 import MapViewComponent from "./MapComponent";
 import { CustomMarker } from "@/app/(tabs)/index.tsx";
 import { LatLng } from "react-native-maps";
@@ -6,6 +6,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { useEffect, useRef, useState } from "react";
 import MapComponent from "./MapComponent";
 import axios from "axios";
+import { Colors } from "@/constants/Colors";
 
 const googleMapsApiKey = "AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs";
 const googlePlacesApiKey = "AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs";
@@ -47,7 +48,7 @@ const SuggestionComponent = ({marker, editText, queryRef, modalRef, highlightLoc
   const { distance:_distance, destinationInfo:_destinationInfo } = getDistanceAndDestinationInfo(marker);
   const [distance, setDistance] = useState("")
   const [destinationInfo, setDestinationInfo] = useState(null)
-
+  const colorScheme = useColorScheme();
 
 const _load = async () => {
   const { distance:_distance, destinationInfo:_destinationInfo } = await getDistanceAndDestinationInfo(origin, marker);
@@ -69,7 +70,7 @@ const _load = async () => {
       }}
       style={{
         flexDirection: "row",
-        backgroundColor: "white",
+        backgroundColor: Colors[colorScheme ?? 'light'].background ,
         width: Dimensions.get("screen").width * 0.9,
         justifyContent: "space-between",
         padding: 20,
@@ -80,15 +81,15 @@ const _load = async () => {
     >
       <View style={{ height: "100%", justifyContent: "space-between", width:'40%' }}>
         <View>
-          <Text ellipsizeMode="tail" numberOfLines={2} style={{ fontSize: 20, fontWeight: "bold", overflow:'hidden' }}>
+          <Text ellipsizeMode="tail" numberOfLines={2} style={{ color: Colors[colorScheme ?? 'light'].text,fontSize: 20, fontWeight: "bold", overflow:'hidden' }}>
             {marker.name}
           </Text>
-          <Text style={{ fontSize: 16, fontWeight: "bold", color: "gray" }}>
+          <Text style={{ fontSize: 16, fontWeight: "bold", color: colorScheme == 'dark' ?Colors[colorScheme ?? 'light'].text: "gray" }}>
             {destinationInfo?.vicinity}
           </Text>
         </View>
         <View style={{ flexDirection: "row" }}>
-          <Text>{distance}</Text>
+          <Text style={{color:Colors[colorScheme ?? 'light'].text, fontWeight:'bold'}}>{distance}</Text>
         </View>
       </View>
       <View style={{width:'60%'}}>
