@@ -41,8 +41,12 @@
 		<string>852854144164-bpgaon6krp6nf795kfe04r4rdqbnvio3.apps.googleusercontent.com</string>
 		<key>LSRequiresIPhoneOS</key>
 		<true />
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>KuduNav needs access to your location to provide you with the most efficient routes and stops on campus.</string>
 		<key>NSLocationAlwaysUsageDescription</key>
-		<string>Your location is required to help you navigate</string>
+		<string>KuduNav needs access to your location to provide you with the most efficient routes and stops on campus, even when the app is running in the background.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>KuduNav needs access to your location to provide you with the most efficient routes and stops on campus while you are using the app.</string>
 		<key>NSAppTransportSecurity</key>
 		<dict>
 			<key>NSExceptionDomains</key>

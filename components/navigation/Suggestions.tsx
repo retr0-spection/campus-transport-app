@@ -2,6 +2,7 @@ import { Dimensions, ScrollView, Text, View } from "react-native"
 import MapViewComponent from "./MapComponent"
 import { CustomMarker } from "@/app/(tabs)/index.tsx"
 import { LatLng } from "react-native-maps";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 
@@ -13,14 +14,19 @@ interface CustomMarker {
 }
 
 interface Props {
-    markers: CustomMarker[]
+    markers: CustomMarker[];
+    modalRef: any
 }
 
-const Suggestions = ({markers}:Props) => {
+const Suggestions = ({markers,  modalRef, setDestination}:Props) => {
 
     return <View style={{ position: "absolute", bottom: 10, left: 0, right: 0 }}>
     <ScrollView horizontal showsHorizontalScrollIndicator={false} snapToAlignment="center" snapToInterval={Dimensions.get('window').width} decelerationRate={"fast"}>
-      {markers?.map((marker) => (<View
+      {markers?.map((marker) => (<TouchableOpacity
+        onPress={() => {
+          setDestination(marker)
+          modalRef.current.show()
+        }}
         style={{
           flexDirection: "row",
           backgroundColor: "white",
@@ -43,7 +49,7 @@ const Suggestions = ({markers}:Props) => {
         <View>
          <MapViewComponent scrollEnabled={false} style={{width:100, height:100, borderRadius:10}} />
         </View>
-      </View>))}
+      </TouchableOpacity>))}
     </ScrollView>
   </View>
 }

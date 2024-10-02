@@ -29,6 +29,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SearchComponent from "@/components/navigation/SearchComponent";
 import * as Location from 'expo-location';
 import { Ionicons } from "@expo/vector-icons";
+import NavModalComponent from "@/components/navigation/navModal";
+import { useRouter } from "expo-router";
 const { width, height } = Dimensions.get("window");
 
 const ASPECT_RATIO = width / height;
@@ -88,8 +90,14 @@ export default function App() {
   }, []); */
 
   const [origin, setOrigin] = useState<LatLng | null>(null);
-  const [destination, setDestination] = useState<LatLng | null>(null);
+  const [destination, setDestination] = useState<CustomMarker | null>(null);
   const [showDirections, setShowDirections] = useState(false);
+  const insets = useSafeAreaInsets()
+  const [query, setQuery] = React.useState<String>("")
+  const [expandSearch, setExpandSearch] = React.useState(true)
+  const [markers, setMarkers] = useState<CustomMarker[]>([]);
+  const modalRef = useRef()
+  const router = useRouter()
 
   const mapref = useRef<MapView>(null);
 
@@ -97,7 +105,7 @@ export default function App() {
     const camera = await mapref.current?.getCamera();
     if (camera) {
       camera.center = position;
-      mapref.current?.animateCamera(camera, { duration: 1000 });
+      mapref.current?.animateCamera(camera);
     }
   };
 
@@ -112,103 +120,109 @@ export default function App() {
   const traceRoute = () => {
     if (origin && destination) {
       setShowDirections(true);
-      mapref.current?.fitToCoordinates([origin, destination], { edgePadding });
+      moveTo(destination.coordinate)
+      mapref.current?.fitToCoordinates([origin, destination.coordinate], { edgePadding });
     }
   };
 
-  const onPlaceSelected = (details: GooglePlaceDetail | null, flag: "origin" | "destination") => {
-    const set = flag === "origin" ? setOrigin : setDestination;
-    const position = {
-      latitude: details?.geometry.location.lat || 0,
-      longitude: details?.geometry.location.lng || 0,
-    };
-    set(position);
-    moveTo(position);
-  };
+ 
+ 
 
-  const openNativeMapsApp = () => {
-    if (origin && destination) {
-      const originStr = `${origin.latitude},${origin.longitude}`;
-      const destinationStr = `${destination.latitude},${destination.longitude}`;
-
-      const url = Platform.select({
-        ios: `http://maps.apple.com/?saddr=${originStr}&daddr=${destinationStr}`,
-        android: `google.navigation:q=${destinationStr}&mode=d`,
-      });
-
-      Linking.openURL(url as string)
-        .catch((err) => console.error('An error occurred', err));
-    }
-  };
-  const insets = useSafeAreaInsets()
-  const [expandSearch, setExpandSearch] = React.useState(true)
-  const [markers, setMarkers] = useState<CustomMarker[]>([]);
 
   
   
-  let mockMarkers: CustomMarker[] = []
+
   
   const apiUrl = 'http://ec2-52-40-184-137.us-west-2.compute.amazonaws.com/api/v1/navigation/poi'; 
  
 
-  React.useEffect(() => {
+  const getCurrentLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.error('Permission to access location was denied');
+      return;
+    }
 
-      const fetchData = async () => {
-        try {
-          const response = await fetch(apiUrl);
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          mockMarkers = data.map(item => ({
-              id: item.id,
-              name: item.name,
-              type: item.type,
-              coordinate: {
-          latitude: item.coordinates.latitude,
-          longitude: item.coordinates.longitude,
-        },
-      }));
-
-        setMarkers(mockMarkers)
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      };
-
-      const getCurrentLocation = async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          console.error('Permission to access location was denied');
-          return;
-        }
+    let location = await Location.getCurrentPositionAsync({});
+    const currentPosition = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+    setOrigin(currentPosition)
     
-        let location = await Location.getCurrentPositionAsync({});
-        const currentPosition = {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        };
-      };
+  };
 
+  const fetchData = async () => {
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      const _mockMarkers = data.map(item => ({
+          id: item.id,
+          name: item.name,
+          type: item.type,
+          coordinate: {
+      latitude: item.coordinates.latitude,
+      longitude: item.coordinates.longitude,
+    },
+  }));
 
-  
+    setMarkers(_mockMarkers)
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const onCloseCallBack = () => {
+    setDestination(null)
+    setShowDirections(false)
+  }
+
+  React.useEffect(() => {
       fetchData();
       getCurrentLocation(); 
     }, []); 
 
 
+    React.useEffect(() => {
+      if (destination){
+        traceRoute()
+      }
+    },[destination])
+
+
+
+  const FilterMarkers = ({query}) => {
+    const _ =  markers.filter((marker) => marker.name.includes(query));
+    
+
+    return <View>
+      {_.map((item) => {
+        return <View>
+          <Text>{item.name}</Text>
+        </View>
+      })}
+    </View>
+  }  
+
 
   return (
     <View style={styles.container}>
-     <MapViewComponent scrollEnabled={true} markers={markers} />
-      <View style={{position:'absolute', top:insets.top,left:0, right:0,paddingHorizontal:30, flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
-        <View style={{backgroundColor:'white', padding:5, borderRadius:13}}>
-          <Ionicons name="notifications-outline" size={27} />
+     <MapViewComponent scrollEnabled={true} ref={mapref} origin={origin} destination={destination} showDirections={showDirections} markers={markers} modalRef={modalRef} />
+      <View style={{position:'absolute', top:insets.top,left:0, right:0,paddingHorizontal:30, flexDirection:'row', justifyContent:'space-between', }}>
+        <View style={{borderRadius:20}}>
+          <Ionicons name="notifications-outline" size={27}  style={{backgroundColor:'white',padding:5,}} onPress={() => router.push('/notifications')} />
         </View>
-        <TextInput placeholder="Search places" style={{backgroundColor:'white', width:Dimensions.get('window').width * 0.75, padding:10, borderRadius:10}}/>
+        <View>
+        <TextInput placeholder="Search places on campus" onChangeText={setQuery} style={{backgroundColor:'white', width:Dimensions.get('window').width * 0.75, padding:10, borderRadius:10}}/>
+         {query.length ? <FilterMarkers query={query} />
+          : null}
+        </View>
       </View>
-      <Suggestions markers={markers} />
-      {/* <SearchComponent /> */}
+      <Suggestions markers={markers}  modalRef={modalRef} setDestination={setDestination} />
+      <NavModalComponent ref={modalRef} onCloseCallBack={onCloseCallBack} destination={destination} />
     </View>
   );
 }
