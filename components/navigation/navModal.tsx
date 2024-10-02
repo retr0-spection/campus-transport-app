@@ -23,6 +23,7 @@ const NavModalComponent = React.forwardRef((props, ref) => {
   const [destinationInfo, setDestinationInfo] = useState(null);
   const { origin, destination, onCloseCallBack, setMode } = props;
   const [activeIndex, setActiveIndex] = useState(0);
+  const mapRef = useRef()
 
   const getDistanceAndDestinationInfo = async (origin, destination) => {
     const originCoords = `${origin.latitude},${origin.longitude}`;
@@ -155,9 +156,10 @@ const NavModalComponent = React.forwardRef((props, ref) => {
             setActiveIndex={setActiveIndex}
           />
           <View>
-            <MapComponent
+            <MapComponent 
+            ref={mapRef}
               scrollEnabled={false}
-              zoom={16}
+              zoom={300}
               // markers={markers}
               origin={destination}
               // modalRef={modalRef}

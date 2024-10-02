@@ -22,11 +22,18 @@ const MapViewComponent = React.forwardRef((props, ref) => {
 
   const mapref = useRef<MapView>(null);
 
+
+  useEffect(() => {
+    if (zoom) moveTo(destination.coordinate);
+  }, [zoom])
+
   const moveTo = async (position: LatLng) => {
-    const camera = await mapref.current?.getCamera();
+    const camera = await ref.current?.getCamera();
     if (camera) {
-      camera.center = position;
-      mapref.current?.animateCamera(camera, { duration: 1000 });
+      const _position = {...position, latitude:position.latitude}
+      camera.center = _position;
+      camera.altitude = zoom
+      ref.current?.animateCamera(camera);
     }
   };
 
@@ -59,23 +66,24 @@ const MapViewComponent = React.forwardRef((props, ref) => {
       ref={ref}
       style={{ width: "100%", height: "100%", ...props.style }}
       provider={Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
-      initialRegion={INITIAL_POSITION}
+      initialRegion={origin || INITIAL_POSITION}
       showsUserLocation
       scrollEnabled={props.scrollEnabled}
       showsBuildings={true}
       showsIndoors={true}
       showsIndoorLevelPicker={true}
+      cameraZoomRange={zoom ? {minCenterCoordinateDistance:300, maxCenterCoordinateDistance:1000} : {}}
       
     >
       {/* {origin && <Marker coordinate={origin} />} */}
-      {destination && <CustomMarker
+      {destination ? (props.pindrop ? <Marker coordinate={destination.coordinate} />: <CustomMarker
         id={destination.id}
         name={destination.name}
         openNativeMapsApp={openNativeMapsApp}
         coordinate={destination.coordinate}
         origin={origin}
         type={destination.type}
-      />}
+      />)  : null}
       {showDirections && origin && destination && (
         <MapViewDirections
           origin={origin}

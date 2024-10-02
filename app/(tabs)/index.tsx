@@ -291,6 +291,7 @@ export default function App() {
         highlightLocation={highlightLocation}
         editText={editText}
         queryRef={queryRef}
+        origin={origin}
       />
       <NavModalComponent
         ref={modalRef}
