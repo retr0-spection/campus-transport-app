@@ -108,13 +108,14 @@ const NotificationsScreen = () => {
     return (
         <SafeAreaView style={{ height: "100%", width: "100%", backgroundColor: "#ffffff" }}>
             <View style={styles.headerContainer}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={router.back}>
                     <Ionicons name={"arrow-back"} color={"black"} size={26}/>
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Notifications</Text>
-                <TouchableOpacity>
+                <View />
+                {/* <TouchableOpacity>
                     <Entypo name={"dots-three-horizontal"} color={"black"} size={20}/>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
             <ScrollView style={{ height: "100%" }} 
                 onScroll={handleScroll}

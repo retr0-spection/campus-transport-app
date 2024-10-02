@@ -19,15 +19,18 @@ import {
   GooglePlaceDetail,
   GooglePlacesAutocomplete,
 } from "react-native-google-places-autocomplete";
-import { requestNotificationPermission, setupNotifications } from '../../firebaseservices/firebaseService';
+import {
+  requestNotificationPermission,
+  setupNotifications,
+} from "../../firebaseservices/firebaseService";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import MapViewDirections from "react-native-maps-directions";
 import MapViewComponent from "@/components/navigation/MapComponent";
 import Suggestions from "@/components/navigation/Suggestions";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SearchComponent from "@/components/navigation/SearchComponent";
-import * as Location from 'expo-location';
+import * as Location from "expo-location";
 import { Ionicons } from "@expo/vector-icons";
 import NavModalComponent from "@/components/navigation/navModal";
 import { useRouter } from "expo-router";
@@ -73,16 +76,14 @@ function InputAutocomplete({
   );
 }
 
-
-export interface CustomMarker  {
+export interface CustomMarker {
   id: string;
   name: string;
   coordinate: LatLng;
   type: string;
-};
+}
 
 export default function App() {
-
   /* useEffect(() => {
     const userId = 'user1';
     requestNotificationPermission(userId);
@@ -92,12 +93,17 @@ export default function App() {
   const [origin, setOrigin] = useState<LatLng | null>(null);
   const [destination, setDestination] = useState<CustomMarker | null>(null);
   const [showDirections, setShowDirections] = useState(false);
-  const insets = useSafeAreaInsets()
-  const [query, setQuery] = React.useState<String>("")
-  const [expandSearch, setExpandSearch] = React.useState(true)
+  const insets = useSafeAreaInsets();
+  const [query, setQuery] = React.useState<String>("");
+  const [expandSearch, setExpandSearch] = React.useState(true);
   const [markers, setMarkers] = useState<CustomMarker[]>([]);
-  const modalRef = useRef()
-  const router = useRouter()
+  const modalRef = useRef();
+  const router = useRouter();
+  const queryRef = useRef()
+  const editText = useCallback((text) => {
+    queryRef.current?.setNativeProps({text});
+    setQuery(text)
+  }, []);
 
   const mapref = useRef<MapView>(null);
 
@@ -120,26 +126,20 @@ export default function App() {
   const traceRoute = () => {
     if (origin && destination) {
       setShowDirections(true);
-      moveTo(destination.coordinate)
-      mapref.current?.fitToCoordinates([origin, destination.coordinate], { edgePadding });
+      moveTo(destination.coordinate);
+      mapref.current?.fitToCoordinates([origin, destination.coordinate], {
+        edgePadding,
+      });
     }
   };
 
- 
- 
-
-
-  
-  
-
-  
-  const apiUrl = 'http://ec2-52-40-184-137.us-west-2.compute.amazonaws.com/api/v1/navigation/poi'; 
- 
+  const apiUrl =
+    "http://ec2-52-40-184-137.us-west-2.compute.amazonaws.com/api/v1/navigation/poi";
 
   const getCurrentLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      console.error('Permission to access location was denied');
+    if (status !== "granted") {
+      console.error("Permission to access location was denied");
       return;
     }
 
@@ -148,81 +148,149 @@ export default function App() {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
     };
-    setOrigin(currentPosition)
-    
+    setOrigin(currentPosition);
   };
 
   const fetchData = async () => {
     try {
       const response = await fetch(apiUrl);
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      const _mockMarkers = data.map(item => ({
-          id: item.id,
-          name: item.name,
-          type: item.type,
-          coordinate: {
-      latitude: item.coordinates.latitude,
-      longitude: item.coordinates.longitude,
-    },
-  }));
+      const _mockMarkers = data.map((item) => ({
+        id: item.id,
+        name: item.name,
+        type: item.type,
+        coordinate: {
+          latitude: item.coordinates.latitude,
+          longitude: item.coordinates.longitude,
+        },
+      }));
 
-    setMarkers(_mockMarkers)
+      setMarkers(_mockMarkers);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
   const onCloseCallBack = () => {
-    setDestination(null)
-    setShowDirections(false)
-  }
+    setDestination(null);
+    setShowDirections(false);
+  };
 
   React.useEffect(() => {
-      fetchData();
-      getCurrentLocation(); 
-    }, []); 
+    fetchData();
+    getCurrentLocation();
+  }, []);
+
+  React.useEffect(() => {
+    if (destination) {
+      traceRoute();
+    }
+  }, [destination]);
 
 
-    React.useEffect(() => {
-      if (destination){
-        traceRoute()
-      }
-    },[destination])
+  const highlightLocation = (location:CustomMarker) => {
+    setDestination(location)
+  }
 
+  const FilterMarkers = ({ query }) => {
+    const _ = markers.filter((marker) => marker.name.toLowerCase().includes(query.toLowerCase()));
 
-
-  const FilterMarkers = ({query}) => {
-    const _ =  markers.filter((marker) => marker.name.includes(query));
-    
-
-    return <View>
-      {_.map((item) => {
-        return <View>
-          <Text>{item.name}</Text>
-        </View>
-      })}
-    </View>
-  }  
-
+    return (
+      <View style={{ borderRadius: 10, marginTop: 10 }}>
+        {_.map((item, index) => {
+          return (
+            <TouchableOpacity
+            onPress={() => {
+              queryRef.current?.blur()
+              editText(item.name)
+              setQuery(item.name)
+              highlightLocation(item)
+            }}
+            activeOpacity={0.7}
+              style={{
+                backgroundColor: "white",
+                borderTopLeftRadius: index == 0 ? 10 : 0,
+                borderTopRightRadius: index == 0 ? 10 : 0,
+                borderBottomLeftRadius: index == _.length - 1 ? 10 : 0,
+                borderBottomRightRadius: index == _.length - 1 ? 10 : 0,
+                width: "100%",
+                padding: 10,
+                paddingVertical:15,
+                borderColor: "#bebebe",
+              }}
+            >
+              <Text>{item.name}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
-     <MapViewComponent scrollEnabled={true} ref={mapref} origin={origin} destination={destination} showDirections={showDirections} markers={markers} modalRef={modalRef} />
-      <View style={{position:'absolute', top:insets.top,left:0, right:0,paddingHorizontal:30, flexDirection:'row', justifyContent:'space-between', }}>
-        <View style={{borderRadius:20}}>
-          <Ionicons name="notifications-outline" size={27}  style={{backgroundColor:'white',padding:5,}} onPress={() => router.push('/notifications')} />
+      <MapViewComponent
+        scrollEnabled={true}
+        ref={mapref}
+        origin={origin}
+        destination={destination}
+        showDirections={showDirections}
+        markers={markers}
+        modalRef={modalRef}
+      />
+      <View
+        style={{
+          position: "absolute",
+          top: insets.top,
+          left: 0,
+          right: 0,
+          paddingHorizontal: 30,
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <View style={{ borderRadius: 20 }}>
+          <Ionicons
+            name="notifications-outline"
+            size={27}
+            style={{ backgroundColor: "white", padding: 5 }}
+            onPress={() => router.push("/notifications")}
+          />
         </View>
         <View>
-        <TextInput placeholder="Search places on campus" onChangeText={setQuery} style={{backgroundColor:'white', width:Dimensions.get('window').width * 0.75, padding:10, borderRadius:10}}/>
-         {query.length ? <FilterMarkers query={query} />
-          : null}
+          <TextInput
+            ref={queryRef}
+            placeholder="Search places on campus"
+            onChangeText={editText}
+            onFocus={() => setExpandSearch(true)}
+            onBlur={() => setExpandSearch(false)}
+            autoCorrect={false}
+            autoComplete="off"
+            style={{
+              backgroundColor: "white",
+              width: Dimensions.get("window").width * 0.75,
+              padding: 10,
+              borderRadius: 10,
+            }}
+          />
+          {query.length && expandSearch ? <FilterMarkers query={query} /> : null}
         </View>
       </View>
-      <Suggestions markers={markers}  modalRef={modalRef} setDestination={setDestination} />
-      <NavModalComponent ref={modalRef} onCloseCallBack={onCloseCallBack} destination={destination} />
+      <Suggestions
+        markers={markers}
+        modalRef={modalRef}
+        highlightLocation={highlightLocation}
+        editText={editText}
+        queryRef={queryRef}
+      />
+      <NavModalComponent
+        ref={modalRef}
+        onCloseCallBack={onCloseCallBack}
+        destination={destination}
+      />
     </View>
   );
 }

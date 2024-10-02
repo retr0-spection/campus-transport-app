@@ -18,13 +18,15 @@ interface Props {
     modalRef: any
 }
 
-const Suggestions = ({markers,  modalRef, setDestination}:Props) => {
+const Suggestions = ({markers,  modalRef, highlightLocation, editText, queryRef}:Props) => {
 
     return <View style={{ position: "absolute", bottom: 10, left: 0, right: 0 }}>
     <ScrollView horizontal showsHorizontalScrollIndicator={false} snapToAlignment="center" snapToInterval={Dimensions.get('window').width} decelerationRate={"fast"}>
       {markers?.map((marker) => (<TouchableOpacity
         onPress={() => {
-          setDestination(marker)
+          editText("")
+          queryRef.current.blur()
+          highlightLocation(marker)
           modalRef.current.show()
         }}
         style={{
