@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   mainBackgroundContainer: {
-    backgroundColor: "#173470",
+    backgroundColor: "#093574",
   },
   containerLight: {
     backgroundColor: "#ffffff",

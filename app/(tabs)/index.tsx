@@ -257,9 +257,10 @@ export default function App() {
           top: insets.top,
           left: 0,
           right: 0,
-          paddingHorizontal: 30,
+          paddingHorizontal: '5%',
           flexDirection: "row",
           justifyContent: "space-between",
+          gap:20,
         }}
       >
         <View style={{flexGrow:0, alignSelf:'flex-start',flexShrink:0, borderRadius: 10,backgroundColor: Colors[colorScheme ?? 'light'].background, padding: 5  }}>

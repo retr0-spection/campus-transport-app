@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios"
 
 
-const domain = 'http://ec2-52-40-184-137.us-west-2.compute.amazonaws.com'
+const domain = 'https://gateway.tandemworkflow.com'
 const testDomain = 'http://localhost:3000'
 
 

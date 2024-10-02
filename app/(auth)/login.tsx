@@ -132,9 +132,9 @@ const LoginComponent = () => {
             <Image source={Kudu} style={{width:SCREEN_WIDTH, height:450}} resizeMode="contain"/>
           </View>
 
-          <View style={{paddingHorizontal:'5%'}}>
+          <View style={{paddingHorizontal:'10%'}}>
             <Text style={{color:'white', fontSize:30, fontWeight:'bold'}}>Let's get started</Text>
-            <Text style={{color:'white', fontSize:24} }>To continue, sign in with your wits account.</Text>
+            <Text style={{color:'white', fontSize:24} }>To continue, sign in with your Wits student account.</Text>
           </View>
 
           <TouchableOpacity onPress={signIn} activeOpacity={0.7} style={{backgroundColor:'white', marginHorizontal:'10%',marginVertical:'5%',paddingHorizontal:'7%',paddingVertical:'3%',borderRadius:7,  flexDirection:'row', alignItems:'center', }}>

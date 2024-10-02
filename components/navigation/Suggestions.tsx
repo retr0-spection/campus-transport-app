@@ -92,14 +92,14 @@ const _load = async () => {
           <Text style={{color:Colors[colorScheme ?? 'light'].text, fontWeight:'bold'}}>{distance}</Text>
         </View>
       </View>
-      <View style={{width:'60%'}}>
+      <View style={{width:'60%', }}>
         <MapComponent
           ref={mapRef}
           scrollEnabled={false}
           zoom={3000}
           pindrop
           destination={marker}
-          style={{ width: 200, height: 100, borderRadius: 10 }}
+          style={{ width: '100%', height: 100, borderRadius: 10,alignSelf:'flex-end', marginRight:10 }}
         />
       </View>
     </TouchableOpacity>

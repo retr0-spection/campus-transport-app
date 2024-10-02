@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScooterImage from '../../../assets/images/scooter.png'
 import Skateboard from '../../../assets/images/skateboard.png'
 import Bicycle from '../../../assets/images/bicycle.png'
 import { useNavigation, useRouter } from 'expo-router';
+import { Colors } from '@/constants/Colors';
 
 interface RentalItem {
   name: string;
@@ -41,6 +42,7 @@ const rentalItems: RentalItem[] = [
 
 const RentalScreen: React.FC = () => {
   const router = useRouter();
+  const colorScheme = useColorScheme()
 
 
 
@@ -49,18 +51,18 @@ const RentalScreen: React.FC = () => {
     }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, {backgroundColor: Colors[colorScheme ?? 'light'].background}]}>
       <ScrollView>
-        <Text style={styles.title}>Rentals</Text>
+        <Text style={[styles.title, {color:Colors[colorScheme ?? 'light'].text}]}>Rentals</Text>
         {rentalItems.map((item, index) => (
           <View key={index} style={styles.rentalItem}>
             <Image source={item.image} style={styles.image} />
             <View style={styles.itemInfo}>
-              <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={[styles.availabilityText, item.available ? styles.available : styles.unavailable]}>
+              <Text style={[styles.itemName, {color:Colors[colorScheme ?? 'light'].text}]}>{item.name}</Text>
+              <Text style={[styles.availabilityText, item.available ? styles.available : styles.unavailable, {color:Colors[colorScheme ?? 'light'].text}]}>
                 {item.available ? 'Available' : 'Unavailable'}
               </Text>
-              <Text style={styles.unitsText}>{item.units} units available</Text>
+              <Text style={[styles.unitsText, {color:Colors[colorScheme ?? 'light'].text}]}>{item.units} units available</Text>
               <TouchableOpacity style={styles.rentButton} onPress={() =>navigate(item.route)}>
                 <Text style={styles.rentButtonText}>Rent</Text>
               </TouchableOpacity>

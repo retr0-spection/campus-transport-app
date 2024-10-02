@@ -1,16 +1,19 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, Image, StyleSheet, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Bicycle from '../../../assets/images/bicycle.png'
 import { useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import  { Paystack }  from 'react-native-paystack-webview';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import ActionSheet from 'react-native-actions-sheet';
 
 const BicycleRentalScreen = () => {
   const [modalVisible, setModalVisible] = useState(true);
   const router = useRouter();
   const navigation = useNavigation();
   const ref = React.useRef()
+  const modalRef = React.useRef()
 
   const pay = () => {
     ref.current.startTransaction()
@@ -20,10 +23,14 @@ const BicycleRentalScreen = () => {
     router.back()
   }
 
+  React.useEffect(() => {
+    modalRef.current.show()
+  }, [])
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={goBack}>
+        <TouchableOpacity onPress={router.back}>
           <Text style={styles.backButton}>←</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Bicycle</Text>
@@ -33,12 +40,11 @@ const BicycleRentalScreen = () => {
         style={styles.bicycleImage}
         resizeMode="contain"
       />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+      <ActionSheet
+      ref={modalRef}
+      containerStyle={{height:'35%', backgroundColor:'#1a237e'}}
+      backgroundInteractionEnabled={true}
+      
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -52,14 +58,14 @@ const BicycleRentalScreen = () => {
             </View>
             <View style={styles.priceContainer}>
               <Text style={styles.priceLabel}>Rental Price:</Text>
-              <Text style={styles.priceValue}>49.9 Kudu bucks</Text>
+              <Text style={styles.priceValue}>R10</Text>
             </View>
             <TouchableOpacity style={styles.rentButton} onPress={pay}>
               <Text style={styles.rentButtonText}>Rent</Text>
             </TouchableOpacity>
           </View>
         </View>
-      </Modal>
+      </ActionSheet>
       <Paystack
         ref={ref}
         paystackKey="your-public-key-here"
@@ -72,7 +78,6 @@ const BicycleRentalScreen = () => {
         onSuccess={(res) => {
           // handle response here
         }}
-        autoStart={true}
       />
     </SafeAreaView>
   );
@@ -102,9 +107,8 @@ const styles = StyleSheet.create({
     height: '50%',
   },
   modalContainer: {
-    flex: 1,
     justifyContent: 'flex-end',
-    height:'50%'
+    height:'100%'
   },
   modalContent: {
     backgroundColor: '#1a237e',
@@ -140,7 +144,8 @@ const styles = StyleSheet.create({
   },
   priceContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
+    gap:10,
     marginBottom: 24,
   },
   priceLabel: {
