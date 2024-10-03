@@ -6,69 +6,66 @@ import Skateboard from '../../../assets/images/skateboard.png'
 import Bicycle from '../../../assets/images/bicycle.png'
 import { useNavigation, useRouter } from 'expo-router';
 import { Colors } from '@/constants/Colors';
+import API, { RentalItem } from '@/api';
+import { useSelector } from 'react-redux';
+import { selectProfile } from '@/redux/slices/userSlice';
 
-interface RentalItem {
-  name: string;
-  image: any; // You would use a proper type for images in a real app
-  available: boolean;
-  units: number;
-  route: string;
-}
 
-const rentalItems: RentalItem[] = [
-  {
-    name: 'Electric Scooter',
-    image: ScooterImage,
-    available: true,
-    units: 10,
-    route: '/(rentals)/scooter-rental',
 
-  },
-  {
-    name: 'Electric Skateboard',
-    image: Skateboard,
-    available: true,
-    units: 3,
-    route: '/(rentals)/skateboard-rental',
-  },
-  {
-    name: 'Bicycle',
-    image: Bicycle,
-    available: true,
-    units: 25,
-    route: '/(rentals)/confirmation',
-  },
-];
 
 const RentalScreen: React.FC = () => {
   const router = useRouter();
   const colorScheme = useColorScheme()
+  const profile = useSelector(selectProfile)
+
+  const [vehicles, setVehicles] = React.useState<RentalItem[]>([])
 
 
 
-    const navigate = (route: string) => {
-      router.push(route);
+    const imageToRender = (type:string) => {
+      if (type == 'Scooter'){
+        return ScooterImage
+      } else if (type == 'Bicycle'){
+        return Bicycle
+      }else if ('Skateboard'){
+        return Skateboard
+      }
     }
+
+    const getVehicles = async () => {
+      const config = {
+        headers: {
+          Authorization:'Bearer ' + profile.token
+        }
+      }
+      const res = await API.V1.Rental.GetVehicles(config)
+      console.warn(res)
+      setVehicles(res)
+
+    }
+
+    React.useEffect(() => {
+      getVehicles()
+    },[])
+
 
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: Colors[colorScheme ?? 'light'].background}]}>
       <ScrollView>
         <Text style={[styles.title, {color:Colors[colorScheme ?? 'light'].text}]}>Rentals</Text>
-        {rentalItems.map((item, index) => (
+        {vehicles.map((item, index) => {
+          const image = imageToRender(item.name)
+          return (
           <View key={index} style={styles.rentalItem}>
-            <Image source={item.image} style={styles.image} />
+            <Image source={image} style={styles.image} />
             <View style={styles.itemInfo}>
               <Text style={[styles.itemName, {color:Colors[colorScheme ?? 'light'].text}]}>{item.name}</Text>
-              <Text style={[styles.availabilityText, item.available ? styles.available : styles.unavailable, {color:Colors[colorScheme ?? 'light'].text}]}>
-                {item.available ? 'Available' : 'Unavailable'}
-              </Text>
-              <Text style={[styles.unitsText, {color:Colors[colorScheme ?? 'light'].text}]}>{item.units} units available</Text>
-              <TouchableOpacity style={styles.rentButton} onPress={() =>navigate(item.route)}>
+              <TouchableOpacity style={styles.rentButton} onPress={() =>router.push(`/confirmation/${item.name}`)}>
                 <Text style={styles.rentButtonText}>Rent</Text>
               </TouchableOpacity>
             </View>
           </View>
-        ))}
+        )})}
       </ScrollView>
     </SafeAreaView>
   );
@@ -98,6 +95,7 @@ const styles = StyleSheet.create({
   itemInfo: {
     flex: 1,
     marginLeft: 16,
+    justifyContent:'space-between'
   },
   itemName: {
     fontSize: 18,

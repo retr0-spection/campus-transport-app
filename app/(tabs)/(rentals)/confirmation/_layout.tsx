@@ -12,8 +12,7 @@ const Layout = () => {
     <>
 
       <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="confirmation" options={{ headerShown: false }} />
+        <Stack.Screen name="[type]" options={{ headerShown: false }} />
       </Stack>
     </>
   );
