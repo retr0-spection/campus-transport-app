@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios"
 
 
-const domain = 'http://ec2-52-40-184-137.us-west-2.compute.amazonaws.com'
+const domain = 'https://gateway.tandemworkflow.com'
 const testDomain = 'http://localhost:3000'
 
 
@@ -10,7 +10,17 @@ interface VerifyResponse {
     message:string;
     token:string;
     refresh_token:string;
+    email:string
 }
+
+export interface RentalItem {
+    id: string;
+    name: string;
+    image: any; // You would use a proper type for images in a real app
+    available: boolean;
+    units: number;
+    route: string;
+  }
 
 const Auth = {
     Verify : async (config: AxiosRequestConfig): Promise<VerifyResponse> => {
@@ -18,13 +28,25 @@ const Auth = {
     }
 }
 
+const RentalAPI = {
+    GetVehicles : async (config: AxiosRequestConfig): Promise<RentalItem[]> => {
+        const response = await axios.get(domain + '/api/v1/rental/vehicles', config)
+
+        return response.data
+    },
+    GetVehicleByType: async (type:string, config: AxiosRequestConfig): Promise<RentalItem[]> => {
+        const response = await axios.get(domain + `/api/v1/rental/vehicles/${type}`, config)
+        return response.data
+    },
+}
+
 const Schedules = {
-    GetSchedules : async (config: AxiosRequestConfig): Promise<T> => {
+    GetSchedules : async (config: AxiosRequestConfig): Promise<any> => {
         return (await axios.get(domain + '/api/v1/bus-schedule/liveschedule?time=08:00', config)).data
     },
-    GetRoutes : async (config: AxiosRequestConfig): Promise<T> => {
+    GetRoutes : async (config: AxiosRequestConfig): Promise<any> => {
         return (await axios.get(domain + '/api/v1/bus-schedule/routenames', config)).data
-    }
+    },
 }
 
 type AuthType = {
@@ -36,9 +58,15 @@ interface ScheduleType {
     GetRoutes: typeof Schedules.GetRoutes
 }
 
+interface RentalType {
+    GetVehicles: typeof RentalAPI.GetVehicles;
+    GetVehicleByType: typeof RentalAPI.GetVehicleByType;
+}
+
 type V1Type = {
     Auth: AuthType;
-    Schedules: ScheduleType
+    Schedules: ScheduleType;
+    Rental: RentalType
  }
 
 type APIType = {
@@ -51,7 +79,8 @@ type APIType = {
 const API: APIType = {
     V1:{
         Auth,
-        Schedules
+        Schedules,
+        Rental:RentalAPI
     }
 }
 
