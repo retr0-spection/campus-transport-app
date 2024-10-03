@@ -6,6 +6,7 @@ import Skateboard from '../../../assets/images/skateboard.png'
 import Bicycle from '../../../assets/images/bicycle.png'
 import { useNavigation, useRouter } from 'expo-router';
 
+
 interface RentalItem {
   name: string;
   image: any; // You would use a proper type for images in a real app
@@ -42,12 +43,14 @@ const rentalItems: RentalItem[] = [
 const RentalScreen: React.FC = () => {
   const router = useRouter();
 
-
+  
 
     const navigate = (route: string) => {
       router.push(route);
     }
-
+    // const navigateToHistory = () => {
+    //   navigate('/(rentals)/rental-history'); // Navigate to RentalHistory screen
+    // };
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -66,11 +69,18 @@ const RentalScreen: React.FC = () => {
               </TouchableOpacity>
             </View>
           </View>
+          
         ))}
+        {/* Button to navigate to rental history
+      <TouchableOpacity style={styles.historyButton} onPress={navigateToHistory}>
+        <Text style={styles.historyButtonText}>View Rental History</Text>
+      </TouchableOpacity> */}
       </ScrollView>
     </SafeAreaView>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -148,6 +158,19 @@ const styles = StyleSheet.create({
   activeNavText: {
     color: '#1a237e',
   },
+  // historyButton: {
+  //   backgroundColor: '#ffa000',
+  //   padding: 12,
+  //   borderRadius: 8,
+  //   alignItems: 'center',
+  //   marginTop: 16,
+  //   width: '100%',
+  // },
+  // historyButtonText: {
+  //   color: 'white',
+  //   fontSize: 16,
+  //   fontWeight: 'bold',
+  // },
 });
 
 export default RentalScreen;
