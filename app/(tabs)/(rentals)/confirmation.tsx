@@ -1,123 +1,78 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, Image, StyleSheet, Modal } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Bicycle from '../../../../assets/images/bicycle.png'
-import Skateboard from '../../../../assets/images/skateboard.png'
-import ScooterImage from '../../../../assets/images/scooter.png'
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import Bicycle from '../../../assets/images/bicycle.png'
+import { useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import  { Paystack }  from 'react-native-paystack-webview';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import ActionSheet from 'react-native-actions-sheet';
-import { useSelector } from 'react-redux';
-import { selectProfile } from '@/redux/slices/userSlice';
-import API from '@/api';
 
 const BicycleRentalScreen = () => {
   const [modalVisible, setModalVisible] = useState(true);
   const router = useRouter();
   const navigation = useNavigation();
   const ref = React.useRef()
-  const modalRef = React.useRef()
-  const profile = useSelector(selectProfile)
-  const {type} = useLocalSearchParams()
-  const [vehicle, setVehicle ] = useState({
-    name: 'Bicycle',
-    image: Bicycle,
-    available: true,
-    units: 25,
-    route: '/(rentals)/confirmation',
-    price:10
-  })
-  const [rentalStations, setRentalStations] = React.useState(['Bozolli', 'Matrix'])
-  const [selectedRentalStation, setSelectedRentalStation] = React.useState({id:0, name:'Sturrock Park'})
 
   const pay = () => {
     ref.current.startTransaction()
   }
 
-  const getVehicle = async (type: string) => {
-    const config = {
-      headers:{
-        Authorization: 'Bearer ' + profile.token
-      }
-    }
-    const vehicle = await API.V1.Rental.GetVehicleByType(type, config)
-
-    console.log(vehicle)
+  const goBack = () => {
+    router.back()
   }
-
-  React.useEffect(() => {
-    modalRef.current.show()
-    getVehicle()
-  }, [])
-
-  const imageToRender = (type:string) => {
-    if (type == 'Scooter'){
-      return ScooterImage
-    } else if (type == 'Bicycle'){
-      return Bicycle
-    }else if ('Skateboard'){
-      return Skateboard
-    }
-  }
-
-  const image = imageToRender(type)
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={router.back}>
+        <TouchableOpacity onPress={goBack}>
           <Text style={styles.backButton}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>{type}</Text>
+        <Text style={styles.title}>Bicycle</Text>
       </View>
       <Image
-        source={image}
+        source={Bicycle}
         style={styles.bicycleImage}
         resizeMode="contain"
       />
-      <ActionSheet
-      ref={modalRef}
-      containerStyle={{height:'35%', backgroundColor:'#1a237e'}}
-      backgroundInteractionEnabled={true}
-      
+      <Modal
+        animationType="slide"
+        transparent={true}
+        
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <View style={styles.locationContainer}>
               <Text style={styles.locationIcon}>📍</Text>
-              <Text style={styles.locationText}>{selectedRentalStation.name}</Text>
+              <Text style={styles.locationText}>Sturrock Park Rental Station</Text>
             </View>
             <View style={styles.availabilityContainer}>
               <Text style={styles.availabilityLabel}>Availability:</Text>
-              <Text style={styles.availabilityValue}>{vehicle.units} units available</Text>
+              <Text style={styles.availabilityValue}>10 bicycles are currently available</Text>
             </View>
             <View style={styles.priceContainer}>
               <Text style={styles.priceLabel}>Rental Price:</Text>
-              <Text style={styles.priceValue}>R10</Text>
+              <Text style={styles.priceValue}>49.9 Kudu bucks</Text>
             </View>
             <TouchableOpacity style={styles.rentButton} onPress={pay}>
               <Text style={styles.rentButtonText}>Rent</Text>
             </TouchableOpacity>
           </View>
         </View>
-      </ActionSheet>
+      </Modal>
       <Paystack
         ref={ref}
-        buttonText="Pay Now"
-        paystackKey="pk_test_4cc7003e0c4e33e880efd904f53bb4963cca5441"
-        paystackSecretKey="sk_test_bde5e1521517f82b9818495d5c4837d730c75483"
-        amount={vehicle.price}
-        currency='zar'
-        billingEmail={profile.email || 'ratinailana@icloud.com'}
-        activityIndicatorColor="#093574"
+        paystackKey="your-public-key-here"
+        amount={'25000.00'}
+        billingEmail="paystackwebview@something.com"
+        activityIndicatorColor="green"
         onCancel={(e) => {
           // handle response here
         }}
         onSuccess={(res) => {
           // handle response here
         }}
+        autoStart={true}
       />
     </SafeAreaView>
   );
@@ -147,8 +102,9 @@ const styles = StyleSheet.create({
     height: '50%',
   },
   modalContainer: {
+    flex: 1,
     justifyContent: 'flex-end',
-    height:'100%'
+    height:'50%'
   },
   modalContent: {
     backgroundColor: '#1a237e',
@@ -184,8 +140,7 @@ const styles = StyleSheet.create({
   },
   priceContainer: {
     flexDirection: 'row',
-    // justifyContent: 'space-between',
-    gap:10,
+    justifyContent: 'space-between',
     marginBottom: 24,
   },
   priceLabel: {

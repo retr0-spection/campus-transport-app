@@ -38,6 +38,10 @@ const RentalAPI = {
         const response = await axios.get(domain + `/api/v1/rental/vehicles/${type}`, config)
         return response.data
     },
+    GetVehicleByStation: async (station:string, config: AxiosRequestConfig): Promise<RentalItem[]> => {
+        const response = await axios.get(domain + `/api/v1/rental/station/${station}`, config)
+        return response.data
+    },
 }
 
 const Schedules = {
