@@ -58,8 +58,9 @@ const Settings = () => {
             <Ionicons
               name="exit-outline"
               size={24}
+              color={ Colors[colorScheme ?? 'light'].text}
             />
-            <Text style={{ fontWeight: "bold", fontSize: 18 }}>
+            <Text style={{ fontWeight: "bold", fontSize: 18, color: Colors[colorScheme ?? 'light'].text }}>
               Log out
             </Text>
           </TouchableOpacity>

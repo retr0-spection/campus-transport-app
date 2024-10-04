@@ -42,6 +42,18 @@ const RentalAPI = {
         const response = await axios.get(domain + `/api/v1/rental/station/${station}`, config)
         return response.data
     },
+    GetRentalStations: async (config:AxiosRequestConfig) => {
+        const response = await axios.get(domain + `/api/v1/navigation/rental`, config)
+        return response.data
+    },
+    CreateRentalObject:async (payload, config:AxiosRequestConfig) => {
+        const response = await axios.post(domain + '/api/v1/rental/rentals/add',payload, config)
+        return response.data
+    },
+    GetStationVehicles:async (station, config:AxiosRequestConfig) => {
+        const response = await axios.get(domain + `/api/v1/rental/station/${station}`, config)
+        return response.data
+    }
 }
 
 const Schedules = {
@@ -65,6 +77,10 @@ interface ScheduleType {
 interface RentalType {
     GetVehicles: typeof RentalAPI.GetVehicles;
     GetVehicleByType: typeof RentalAPI.GetVehicleByType;
+    GetRentalStations: typeof RentalAPI.GetRentalStations;
+    CreateRentalObject: typeof RentalAPI.CreateRentalObject;
+    GetStationVehicles: typeof RentalAPI.GetStationVehicles
+    
 }
 
 type V1Type = {

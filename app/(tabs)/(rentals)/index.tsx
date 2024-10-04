@@ -9,6 +9,7 @@ import { Colors } from '@/constants/Colors';
 import API, { RentalItem } from '@/api';
 import { useSelector } from 'react-redux';
 import { selectProfile } from '@/redux/slices/userSlice';
+import { Feather } from '@expo/vector-icons';
 
 
 
@@ -52,7 +53,13 @@ const RentalScreen: React.FC = () => {
   return (
     <SafeAreaView style={[styles.container, {backgroundColor: Colors[colorScheme ?? 'light'].background}]}>
       <ScrollView>
-        <Text style={[styles.title, {color:Colors[colorScheme ?? 'light'].text}]}>Rentals</Text>
+        <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingRight:20}}>
+          <Text style={[styles.title, {color:Colors[colorScheme ?? 'light'].text}]}>Rentals</Text>
+          <TouchableOpacity activeOpacity={.7} onPress={() => null}>
+          <Feather name="more-horizontal" color={Colors[colorScheme ?? 'light'].text} size={20} />
+
+          </TouchableOpacity>
+        </View>
         {vehicles.map((item, index) => {
           const image = imageToRender(item.name)
           return (
@@ -60,7 +67,8 @@ const RentalScreen: React.FC = () => {
             <Image source={image} style={styles.image} />
             <View style={styles.itemInfo}>
               <Text style={[styles.itemName, {color:Colors[colorScheme ?? 'light'].text}]}>{item.name}</Text>
-              <TouchableOpacity style={styles.rentButton} onPress={() =>router.push(`/confirmation/${item.name}`)}>
+              <Text style={[styles.itemName, {color:Colors[colorScheme ?? 'light'].text, fontSize:16}]}>R{item.price}</Text>
+              <TouchableOpacity style={styles.rentButton} onPress={() => router.push(`/confirmation/${item.name}`)}>
                 <Text style={styles.rentButtonText}>Rent</Text>
               </TouchableOpacity>
             </View>
@@ -86,7 +94,6 @@ const styles = StyleSheet.create({
   rentalItem: {
     flexDirection: 'row',
     padding: 16,
-    borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
   },
   image: {

@@ -1,4 +1,4 @@
-import { Dimensions, ScrollView, Text, useColorScheme, View } from "react-native";
+import { Dimensions, Image, ScrollView, Text, useColorScheme, View } from "react-native";
 import MapViewComponent from "./MapComponent";
 import { CustomMarker } from "@/app/(tabs)/index.tsx";
 import { LatLng } from "react-native-maps";
@@ -37,23 +37,43 @@ const getDistanceAndDestinationInfo = async (origin, destination) => {
   const placeResponse = await axios.get(placeUrl);
   const destinationInfo = placeResponse.data.results[0];
 
+  // Get the place ID of the destination
+  const placeId = destinationInfo.place_id;
+
+  // Use the place ID to get the details of the destination place
+  const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,rating,opening_hours,photos&key=${googlePlacesApiKey}`;
+  const detailsResponse = await axios.get(detailsUrl);
+  const destinationDetails = detailsResponse.data.result;
+
+  // Get the photos of the destination place
+  const photos = destinationDetails.photos;
+  const photoUrls = photos.map((photo) => {
+    return `https://maps.googleapis.com/maps/api/place/photo/v1/photo?maxwidth=400&photoreference=${photo.photo_reference}&key=${googlePlacesApiKey}`;
+  });
+
   return {
     distance: distance.text,
     destinationInfo,
-  };
-};
+    destinationDetails,
+    photoUrls,
+  
+  }
+}
 
 const SuggestionComponent = ({marker, editText, queryRef, modalRef, highlightLocation, origin}) => {
   const mapRef = useRef();
   const { distance:_distance, destinationInfo:_destinationInfo } = getDistanceAndDestinationInfo(marker);
   const [distance, setDistance] = useState("")
   const [destinationInfo, setDestinationInfo] = useState(null)
+  const [photos, setPhotos] = useState<string[]>([])
   const colorScheme = useColorScheme();
 
 const _load = async () => {
-  const { distance:_distance, destinationInfo:_destinationInfo } = await getDistanceAndDestinationInfo(origin, marker);
+  const { distance:_distance, destinationInfo:_destinationInfo, photoUrls } = await getDistanceAndDestinationInfo(origin, marker);
   setDestinationInfo(_destinationInfo)
   setDistance(_distance)
+  console.warn(photoUrls)
+  setPhotos(photoUrls)
 }
 
   useEffect(() => {
@@ -92,7 +112,7 @@ const _load = async () => {
           <Text style={{color:Colors[colorScheme ?? 'light'].text, fontWeight:'bold'}}>{distance}</Text>
         </View>
       </View>
-      <View style={{width:'60%', }}>
+      <View style={{width:'60%',height:'100%' }}>
         <MapComponent
           ref={mapRef}
           scrollEnabled={false}
@@ -101,6 +121,7 @@ const _load = async () => {
           destination={marker}
           style={{ width: '100%', height: 100, borderRadius: 10,alignSelf:'flex-end', marginRight:10 }}
         />
+        {/* <Image source={photos[0]} style={{height:100, width:100}}  resizeMode="contain" /> */}
       </View>
     </TouchableOpacity>
   );

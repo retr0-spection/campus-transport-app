@@ -12,9 +12,9 @@ const Layout = () => {
     <>
 
       <Stack>
-        <Stack.Screen name="stations" options={{ headerShown: false }} />
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="confirmation" options={{ headerShown: false }} />
+        <Stack.Screen name="stations" options={{ headerShown: false }} />
         <Stack.Screen name="skateboard-rental" options={{ headerShown: false }} />
         <Stack.Screen name="scooter-rental" options={{ headerShown: false , gestureEnabled: true} }/>
         <Stack.Screen name="rental-history" options={{ headerShown: false }} />
