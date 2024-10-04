@@ -7,15 +7,18 @@ import {
   TouchableOpacity,
   Platform, 
   ScrollView,
-  Animated
+  Animated,
+  useColorScheme
 } from "react-native";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 import { useRouter } from 'expo-router';
+import { Colors } from "@/constants/Colors";
 
 const NotificationsScreen = () => {
 
     const [showIcons, setShowIcons] = useState(false);
     const scrollY = useRef(new Animated.Value(0)).current;
+    const colorScheme = useColorScheme()
 
     const router = useRouter();
 
@@ -82,7 +85,7 @@ const NotificationsScreen = () => {
         return(
             <TouchableOpacity style={[
                 styles.notificationContainer,
-                /* status === "read" && { backgroundColor: "#F2F3F4" } */
+                {backgroundColor:Colors[colorScheme].background}
             ]}>
                 <View style ={styles.notificationContent}>
                     <View style={styles.iconContainer}>
@@ -90,14 +93,14 @@ const NotificationsScreen = () => {
                     </View>
                     <View style={styles.textContainer}>
                         <View style={{flexDirection:"row", alignItems:"center", gap: 3, justifyContent:"space-between"}}>
-                            <Text style={styles.notificationTitle}>{title}</Text>
+                            <Text style={[styles.notificationTitle,{color:Colors[colorScheme].text}]}>{title}</Text>
                             {status !== "read" && (
                             <Animated.View style={{ transform: [{ scale: pulseAnimation }] }}>
                                 <Entypo name="dot-single" size={26} color={"#ff9f00"} />
                             </Animated.View>
                             )}
                         </View>
-                        <Text style={styles.notificationMessage} numberOfLines={2}>{message}</Text>
+                        <Text style={[styles.notificationMessage, {color:Colors[colorScheme].text}]} numberOfLines={2}>{message}</Text>
                         <Text style={styles.notificationTimestamp}>{timestamp}</Text>
                     </View>
                 </View>
@@ -106,12 +109,12 @@ const NotificationsScreen = () => {
     };
 
     return (
-        <SafeAreaView style={{ height: "100%", width: "100%", backgroundColor: "#ffffff" }}>
+        <SafeAreaView style={{ height: "100%", width: "100%", backgroundColor: Colors[colorScheme].background }}>
             <View style={styles.headerContainer}>
                 <TouchableOpacity onPress={router.back}>
-                    <Ionicons name={"arrow-back"} color={"black"} size={26}/>
+                    <Ionicons name={"arrow-back"} color={Colors[colorScheme].text} size={26}/>
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Notifications</Text>
+                <Text style={[styles.headerTitle, {color:Colors[colorScheme].text}]}>Notifications</Text>
                 <View />
                 {/* <TouchableOpacity>
                     <Entypo name={"dots-three-horizontal"} color={"black"} size={20}/>
@@ -122,9 +125,9 @@ const NotificationsScreen = () => {
                 scrollEventThrottle={16}>
                 <View style={styles.notificationsContent}>
                     <View style={styles.subHeader}>
-                        <Text style={styles.seubHeaderTitle}>Today</Text>
+                        <Text style={[styles.seubHeaderTitle, {color:Colors[colorScheme].text}]}>Today</Text>
                         <View style={styles.numContainer}>
-                            <Text style={{color:"#173470", fontWeight:'bold'}}>{unreadNotifications.length}</Text>
+                            <Text style={[{color:"#173470", fontWeight:'bold'}]}>{unreadNotifications.length}</Text>
                         </View>
                         {/* {showIcons ? (
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -148,7 +151,7 @@ const NotificationsScreen = () => {
                 </View>
                 <View style={styles.notificationsContent}>
                     <View style={styles.subHeader}>
-                        <Text style={styles.seubHeaderTitle}>Earlier</Text>
+                        <Text style={[styles.seubHeaderTitle, {color:Colors[colorScheme].text}]}>Earlier</Text>
                         <View style={styles.numContainer}>
                             <Text style={{color:"#173470", fontWeight:'bold'}}>{readNotifications.length}</Text>
                         </View>

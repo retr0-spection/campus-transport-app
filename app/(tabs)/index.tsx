@@ -36,6 +36,9 @@ import { Ionicons } from "@expo/vector-icons";
 import NavModalComponent from "@/components/navigation/navModal";
 import { useRouter } from "expo-router";
 import { Colors } from "@/constants/Colors";
+import API from "@/api";
+import { useSelector } from "react-redux";
+import { selectProfile } from "@/redux/slices/userSlice";
 const { width, height } = Dimensions.get("window");
 
 const ASPECT_RATIO = width / height;
@@ -100,10 +103,12 @@ export default function App() {
   const [expandSearch, setExpandSearch] = React.useState(true);
   const [markers, setMarkers] = useState<CustomMarker[]>([]);
   const [mode, setMode] = useState<String>("WALKING");
+  const [rentalStations, setRentalStations] = React.useState([])
   const modalRef = useRef();
   const router = useRouter();
   const queryRef = useRef()
   const colorScheme = useColorScheme();
+  const profile = useSelector(selectProfile)
 
   const editText = useCallback((text) => {
     queryRef.current?.setNativeProps({text});
@@ -186,9 +191,22 @@ export default function App() {
     setShowDirections(false);
   };
 
+
+  const _getRentalStations = async () => {
+    const config = {
+      headers:{
+        Authorization:'Bearer ' + profile.token
+      }
+    }
+    const stations = await API.V1.Rental.GetRentalStations(config)
+    setRentalStations(stations)
+
+  } 
+
   React.useEffect(() => {
     fetchData();
     getCurrentLocation();
+    _getRentalStations()
   }, []);
 
   React.useEffect(() => {
@@ -247,9 +265,11 @@ export default function App() {
         destination={destination}
         showDirections={showDirections}
         markers={markers}
+        rentalStations={rentalStations}
         modalRef={modalRef}
         mode={mode}
         setMode={setMode}
+        highlightLocation={highlightLocation}
       />
       <View
         style={{
@@ -292,14 +312,14 @@ export default function App() {
           {query.length && expandSearch ? <FilterMarkers query={query} /> : null}
         </View>
       </View>
-      <Suggestions
+     {origin ? <Suggestions
         markers={markers}
         modalRef={modalRef}
         highlightLocation={highlightLocation}
         editText={editText}
         queryRef={queryRef}
         origin={origin}
-      />
+      /> : null}
       <NavModalComponent
         ref={modalRef}
         onCloseCallBack={onCloseCallBack}

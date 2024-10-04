@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   Image,
   Modal,
-  Alert,
   useColorScheme,
   ScrollView,
 } from "react-native";
@@ -33,7 +32,6 @@ const App = () => {
       const response = await API.V1.Schedules.GetSchedules({});
       setDepartures(response); // Assuming the API returns a list of departures
     } catch (error) {
-      Alert.alert("Error", "Failed to fetch live schedule.");
       console.error(error);
     }
   };
@@ -44,7 +42,6 @@ const App = () => {
       const response = await API.V1.Schedules.GetRoutes({});
       setRoutes(response);
     } catch (error) {
-      Alert.alert("Error", "Failed to fetch routes.");
       console.error(error);
     }
   };
@@ -57,11 +54,11 @@ const App = () => {
 
   const renderDeparture = ({ item }) => (
     <View style={styles.departure}>
-      <Text style={styles.departureTime}>
+      <Text style={{color: colorScheme == 'dark' ?'gold': styles.departureTime.color}}>
         {item.time || item.departureTime}
       </Text>
-      <Text style={{fontSize:18, fontWeight:'bold'}}>{item.route || item.routeName}</Text>
-      <Text style={{fontWeight:'medium', fontSize:16}}>{item.destination || item.stopName}</Text>
+      <Text style={[{fontSize:18, fontWeight:'bold'}, { color: Colors[colorScheme ?? "light"].text }]}>{item.route || item.routeName}</Text>
+      <Text style={[{fontWeight:'medium', fontSize:16}, { color: Colors[colorScheme ?? "light"].text }]}>{item.destination || item.stopName}</Text>
     </View>
   );
 
@@ -69,14 +66,14 @@ const App = () => {
     <SafeAreaView
       style={{ backgroundColor: Colors[colorScheme ?? "light"].background }}
     >
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: Colors[colorScheme ?? "light"].background}]}>
         <Text
           style={[styles.title, { color: Colors[colorScheme ?? "light"].text }]}
         >
           Bus schedule
         </Text>
         <ScrollView style={{paddingHorizontal:'5%'}}>
-          {departures.map((item) => renderDeparture({ item }))}
+          {departures?.map((item) => renderDeparture({ item }))}
         </ScrollView>
       </View>
     </SafeAreaView>
