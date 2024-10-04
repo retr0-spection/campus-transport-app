@@ -65,7 +65,8 @@ const BicycleRentalScreen = () => {
         Authorization: "Bearer " + profile.token,
       },
     };
-    const stations = await API.V1.Rental.GetRentalStations(config);
+    const _ = await API.V1.Rental.GetRentalStations(config);
+    const stations = _.map((item) => item.name)
     setRentalStations(stations);
     setSelectedRentalStation(stations[0]);
   };
