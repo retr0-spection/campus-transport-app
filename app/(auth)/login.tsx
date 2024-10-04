@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
 import { setAuthenticated, setProfile } from "../../redux/slices/userSlice";
-import { router } from "expo-router";
+import { router, useNavigation, useRouter } from "expo-router";
 import axios, { AxiosRequestConfig } from "axios";
 import { styles } from "../../styles";
 import Kudu from "../../assets/images/kudu.png";
@@ -38,7 +38,7 @@ const LoginComponent = () => {
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
-
+  const navigation = useNavigation();
   const validateEmail = (email) => {
     const re =
       /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -80,9 +80,17 @@ const LoginComponent = () => {
           'X-Google-Token':_.data?.idToken
         }
       }
-      const response = await API.V1.Auth.Verify(config)
+      const {token, refresh_token, email} = await API.V1.Auth.Verify(config)
 
-      console.warn(response.data)
+      console.log(token, refresh_token)
+
+      dispatch(setProfile({token, refresh_token, email}))
+      dispatch(setAuthenticated(true))
+
+      navigation.replace("(tabs)");
+
+      
+
 
      
     } catch (error) {
@@ -124,9 +132,9 @@ const LoginComponent = () => {
             <Image source={Kudu} style={{width:SCREEN_WIDTH, height:450}} resizeMode="contain"/>
           </View>
 
-          <View style={{paddingHorizontal:'5%'}}>
+          <View style={{paddingHorizontal:'10%'}}>
             <Text style={{color:'white', fontSize:30, fontWeight:'bold'}}>Let's get started</Text>
-            <Text style={{color:'white', fontSize:24} }>To continue, sign in with your wits account.</Text>
+            <Text style={{color:'white', fontSize:24} }>To continue, sign in with your Wits student account.</Text>
           </View>
 
           <TouchableOpacity onPress={signIn} activeOpacity={0.7} style={{backgroundColor:'white', marginHorizontal:'10%',marginVertical:'5%',paddingHorizontal:'7%',paddingVertical:'3%',borderRadius:7,  flexDirection:'row', alignItems:'center', }}>
