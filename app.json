@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Kudunav",
-    "slug": "Kudunav",
+    "name": "CampusTransportApp",
+    "slug": "CampusTransportApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "com.campustransport.app",
+    "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -34,12 +34,6 @@
         "@react-native-google-signin/google-signin",
         {
           "iosUrlScheme": "com.googleusercontent.apps.852854144164-m2frvklvaeesil11dc8f6sfkf9r2rdap"
-        }
-      ],
-      [
-        "expo-location",
-        {
-          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
       ]
     ],

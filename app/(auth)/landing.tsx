@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import {
   View,
   Text,
@@ -24,53 +24,6 @@ import { AnimatedScrollView } from "react-native-reanimated/lib/typescript/reani
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 const SCREEN_HEIGHT = Dimensions.get("screen").height;
 
-
-const _ScrollIndicator = React.forwardRef((props, ref) => {
-  const [index, setIndex] = React.useState(0)
-  React.useImperativeHandle(ref, () => ({
-    setIndex
-  }),[])
-
-  return <View
-  style={{
-    paddingVertical: 10,
-    backgroundColor: "#3e3e3e",
-    borderRadius: 20,
-    flexDirection: "row",
-  }}
->
-  <View
-    style={{
-      backgroundColor: index == 0 ? "white" : 'gray',
-      width: 15,
-      height: 15,
-      borderRadius: 7.5,
-      marginHorizontal: 10,
-    }}
-  />
-  <View
-    style={{
-      backgroundColor: index == 1 ? "white" : 'gray',
-      width: 15,
-      height: 15,
-      borderRadius: 7.5,
-      marginHorizontal: 10,
-    }}
-  />
-  <View
-    style={{
-      backgroundColor: index == 2 ? "white" : 'gray',
-      width: 15,
-      height: 15,
-      borderRadius: 7.5,
-      marginHorizontal: 10,
-    }}
-  />
-</View>
-})
-
-const ScrollIndicator = React.memo(_ScrollIndicator)
-
 const LandingComponent = () => {
   const dispatch = useDispatch();
   const idx  = useSharedValue(0)
@@ -78,7 +31,6 @@ const LandingComponent = () => {
   const AnimatedSafeAreaView = Animated.createAnimatedComponent(SafeAreaView)
   const AnimatedAntDesign = Animated.createAnimatedComponent(AntDesign)
   const scrollViewRef = React.useRef<AnimatedScrollView>()
-  const scrollRef = React.useRef()
 
   const animatedStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(
@@ -87,10 +39,6 @@ const LandingComponent = () => {
       ['#173470', 'white', '#173470']
     ),
   }));
-
-
-
- 
 
   const animatedTextStyle = useAnimatedStyle(() => ({
     color: interpolateColor(
@@ -121,20 +69,14 @@ const LandingComponent = () => {
   const handleScrollEvent = (e) => {
     const _ = e.nativeEvent.contentOffset.x
     if (_ == 0){
-      idx.value = 0
-      scrollRef.current.setIndex(0)
+      idx.value == 0
 
     }
     if (_ == SCREEN_WIDTH){
-      idx.value = 1
-      scrollRef.current.setIndex(1)
+      idx.value == 1
 
-
-
-    }else if (_ == 2*SCREEN_WIDTH ){
-      idx.value = 2
-      scrollRef.current.setIndex(2)
-
+    }else if (_ == 2*SCREEN_WIDTH){
+      idx.value == 2
     }
 
   }
@@ -148,7 +90,7 @@ const LandingComponent = () => {
         ref={scrollViewRef}
         style={[{
           height: "100%",
-          paddingHorizontal: "5%",
+          paddingHorizontal: "3%",
           flexDirection:'row',
           paddingTop: "15%",
           
@@ -172,7 +114,7 @@ const LandingComponent = () => {
           <View>
             <Image
               source={NavPana}
-              style={{ width: SCREEN_WIDTH * 0.95, height: SCREEN_WIDTH }}
+              style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
               resizeMode="contain"
             />
           </View>
@@ -190,7 +132,7 @@ const LandingComponent = () => {
           <View>
             <Image
               source={ScooterAmico}
-              style={{ width: SCREEN_WIDTH * 0.95, height: SCREEN_WIDTH }}
+              style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
               resizeMode="contain"
             />
           </View>
@@ -208,7 +150,7 @@ const LandingComponent = () => {
           <View>
             <Image
               source={CityBus}
-              style={{ width: SCREEN_WIDTH * 0.95, height: SCREEN_WIDTH }}
+              style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
               resizeMode="contain"
             />
           </View>
@@ -229,7 +171,42 @@ const LandingComponent = () => {
           <TouchableOpacity onPress={skip}>
             <Animated.Text style={[{ fontSize: 20, paddingRight:'10%' }, animatedTextStyle]}>Skip</Animated.Text>
           </TouchableOpacity>
-          <ScrollIndicator ref={scrollRef} />
+          <View
+            style={{
+              paddingVertical: 10,
+              backgroundColor: "#3e3e3e",
+              borderRadius: 20,
+              flexDirection: "row",
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: idx.value == 0 ? "white" : 'gray',
+                width: 15,
+                height: 15,
+                borderRadius: 7.5,
+                marginHorizontal: 10,
+              }}
+            />
+            <View
+              style={{
+                backgroundColor: idx.value == 1 ? "white" : 'gray',
+                width: 15,
+                height: 15,
+                borderRadius: 7.5,
+                marginHorizontal: 10,
+              }}
+            />
+            <View
+              style={{
+                backgroundColor: idx.value == 2 ? "white" : 'gray',
+                width: 15,
+                height: 15,
+                borderRadius: 7.5,
+                marginHorizontal: 10,
+              }}
+            />
+          </View>
           <TouchableOpacity onPress={next}>
             <Animated.Text style={[{ fontSize: 20 }, animatedTextStyle]}>{idx.value == 2 ? 'Get started' : 'Continue'}</Animated.Text>
           </TouchableOpacity>

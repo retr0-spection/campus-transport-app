@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Dimensions, Linking, Platform, StyleSheet, Text } from "react-native";
 import { GooglePlaceDetail } from "react-native-google-places-autocomplete";
 import MapView, {
@@ -10,9 +10,17 @@ import MapView, {
 import MapViewDirections from "react-native-maps-directions";
 import CustomMarker from "./CustomMarker";
 
-const MapViewComponent = React.forwardRef((props, ref) => {
-  const {origin, destination, showDirections, mode, setMode, zoom} = props
-  const markers = props.markers || [];
+
+
+
+const MapViewComponent = (props) => {
+
+  const [origin, setOrigin] = useState<LatLng | null>(null);
+  const [destination, setDestination] = useState<LatLng | null>(null);
+  const [showDirections, setShowDirections] = useState(false);
+  const markers = props.markers || []
+
+  
 
   const { width, height } = Dimensions.get("window");
 
@@ -22,18 +30,11 @@ const MapViewComponent = React.forwardRef((props, ref) => {
 
   const mapref = useRef<MapView>(null);
 
-
-  useEffect(() => {
-    if (zoom) moveTo(destination.coordinate);
-  }, [zoom])
-
   const moveTo = async (position: LatLng) => {
-    const camera = await ref.current?.getCamera();
+    const camera = await mapref.current?.getCamera();
     if (camera) {
-      const _position = {...position, latitude:position.latitude}
-      camera.center = _position;
-      camera.altitude = zoom
-      ref.current?.animateCamera(camera);
+      camera.center = position;
+      mapref.current?.animateCamera(camera, { duration: 1000 });
     }
   };
 
@@ -44,8 +45,39 @@ const MapViewComponent = React.forwardRef((props, ref) => {
     longitudeDelta: LONGITUDE_DELTA,
   };
 
+  const edgePaddingValue = 10;
+  const edgePadding = {
+    top: edgePaddingValue,
+    right: edgePaddingValue,
+    bottom: edgePaddingValue,
+    left: edgePaddingValue,
+  };
 
-  const openNativeMapsApp = (origin, destination) => {
+ 
+
+  
+
+  const traceRoute = () => {
+    if (origin && destination) {
+      setShowDirections(true);
+      mapref.current?.fitToCoordinates([origin, destination], { edgePadding });
+    }
+  };
+
+  const onPlaceSelected = (
+    details: GooglePlaceDetail | null,
+    flag: "origin" | "destination"
+  ) => {
+    const set = flag === "origin" ? setOrigin : setDestination;
+    const position = {
+      latitude: details?.geometry.location.lat || 0,
+      longitude: details?.geometry.location.lng || 0,
+    };
+    set(position);
+    moveTo(position);
+  };
+
+  const openNativeMapsApp = () => {
     if (origin && destination) {
       const originStr = `${origin.latitude},${origin.longitude}`;
       const destinationStr = `${destination.latitude},${destination.longitude}`;
@@ -62,97 +94,76 @@ const MapViewComponent = React.forwardRef((props, ref) => {
   };
 
   return (
+    
     <MapView
-      ref={ref}
-      style={{ width: "100%", height: "100%", ...props.style }}
+      ref={mapref}
+      style={{ width: "100%", height: "100%", ...props.style  }}
       provider={Platform.OS === "android" ? PROVIDER_GOOGLE : PROVIDER_DEFAULT}
-      initialRegion={origin || INITIAL_POSITION}
+      initialRegion={INITIAL_POSITION}
       showsUserLocation
       scrollEnabled={props.scrollEnabled}
-      showsBuildings={true}
-      showsIndoors={true}
-      showsIndoorLevelPicker={true}
-      cameraZoomRange={zoom ? {minCenterCoordinateDistance:300, maxCenterCoordinateDistance:1000} : {}}
-      
     >
-      {/* {origin && <Marker coordinate={origin} />} */}
-      {destination ? (props.pindrop ? <Marker coordinate={destination.coordinate} />: <CustomMarker
-        id={destination.id}
-        name={destination.name}
-        openNativeMapsApp={openNativeMapsApp}
-        coordinate={destination.coordinate}
-        origin={origin}
-        type={destination.type}
-      />)  : null}
+      {origin && <Marker coordinate={origin} />}
+      {destination && <Marker coordinate={destination} />}
       {showDirections && origin && destination && (
         <MapViewDirections
           origin={origin}
-          destination={destination.coordinate}
+          destination={destination}
           apikey="AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs"
           strokeColor="#6644ff"
           strokeWidth={4}
-          optimizeWaypoints={true}
-          mode={mode}
-          onError={() => setMode("WALKING")}
         />
-        
       )}
 
-      {/* {markers.map((marker) => {
-
-        return  <>
-        {!destination ? <CustomMarker
-        id={marker.id}
-        name={marker.name}
-        openNativeMapsApp={openNativeMapsApp}
-        coordinate={marker.coordinate}
-        origin={INITIAL_POSITION}
-        type={marker.type}
-      /> :null}
-        </>
-      }
-      )} */}
+   {  markers.map((marker) => (
+        <CustomMarker id={marker.id} name={marker.name} coordinate={marker.coordinate} type={marker.type} />
+           
+          ))  }
     </MapView>
-  );
-});
 
-export default React.memo(MapViewComponent);
+
+  
+);
+};
+
+export default MapViewComponent
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  map: {
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
-  },
-  searchContainer: {
-    position: "absolute",
-    width: "90%",
-    backgroundColor: "white",
-    shadowColor: "black",
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 4,
-    padding: 8,
-    top: 40,
-    borderRadius: 20,
-  },
-  input: {
-    borderColor: "#888",
-    borderWidth: 1,
-  },
-  button: {
-    backgroundColor: "#bbb",
-    paddingVertical: 8,
-    marginTop: 16,
-    borderRadius: 4,
-  },
-  buttonText: {
-    textAlign: "center",
-  },
-});
+    container: {
+      flex: 1,
+      backgroundColor: "#fff",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    map: {
+      width: Dimensions.get("window").width,
+      height: Dimensions.get("window").height,
+    },
+    searchContainer: {
+      position: "absolute",
+      width: "90%",
+      backgroundColor: "white",
+      shadowColor: "black",
+      shadowOffset: { width: 2, height: 2 },
+      shadowOpacity: 0.5,
+      shadowRadius: 4,
+      elevation: 4,
+      padding: 8,
+      top: 40,
+      borderRadius: 20,
+    },
+    input: {
+      borderColor: "#888",
+      borderWidth: 1,
+    },
+    button: {
+      backgroundColor: "#bbb",
+      paddingVertical: 8,
+      marginTop: 16,
+      borderRadius: 4,
+    },
+    buttonText: {
+      textAlign: "center",
+    },
+  });
+  
