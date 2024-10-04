@@ -24,8 +24,10 @@ import {
   requestNotificationPermission,
   setupNotifications,
 } from "../../firebaseservices/firebaseService";
+import firebase from '@react-native-firebase/app';
+import messaging from '@react-native-firebase/messaging';
 
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import MapViewDirections from "react-native-maps-directions";
 import MapViewComponent from "@/components/navigation/MapComponent";
 import Suggestions from "@/components/navigation/Suggestions";
@@ -90,6 +92,39 @@ export default function App() {
     const userId = 'user1';
     requestNotificationPermission(userId);
     setupNotifications();
+  }, []); */
+
+ /*  useEffect(() => {
+    const requestUserPermission = async () => {
+      const authStatus = await messaging().requestPermission();
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+        alert("hi")
+
+      if (enabled) {
+        console.log('Authorization status:', authStatus);
+      }
+    };
+
+    requestUserPermission();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
+  
+    const getToken = async () => {
+      const token = await messaging().getToken();
+      console.log('FCM Token:', token);
+      // Send this token to your server
+    };
+  
+    getToken();
+  
+    return unsubscribe;
   }, []); */
 
   const [origin, setOrigin] = useState<LatLng | null>(null);
