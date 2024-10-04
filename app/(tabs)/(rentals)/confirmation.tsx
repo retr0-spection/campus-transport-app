@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Bicycle from '../../../assets/images/bicycle.png'
 import { useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
+import  { Paystack }  from 'react-native-paystack-webview';
 
 const BicycleRentalScreen = () => {
   const [modalVisible, setModalVisible] = useState(true);
   const router = useRouter();
   const navigation = useNavigation();
+  const ref = React.useRef()
 
+  const pay = () => {
+    ref.current.startTransaction()
+  }
 
   const goBack = () => {
     router.back()
@@ -49,12 +54,26 @@ const BicycleRentalScreen = () => {
               <Text style={styles.priceLabel}>Rental Price:</Text>
               <Text style={styles.priceValue}>49.9 Kudu bucks</Text>
             </View>
-            <TouchableOpacity style={styles.rentButton} onPress={goBack}>
+            <TouchableOpacity style={styles.rentButton} onPress={pay}>
               <Text style={styles.rentButtonText}>Rent</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
+      <Paystack
+        ref={ref}
+        paystackKey="your-public-key-here"
+        amount={'25000.00'}
+        billingEmail="paystackwebview@something.com"
+        activityIndicatorColor="green"
+        onCancel={(e) => {
+          // handle response here
+        }}
+        onSuccess={(res) => {
+          // handle response here
+        }}
+        autoStart={true}
+      />
     </SafeAreaView>
   );
 };
@@ -85,6 +104,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
+    height:'50%'
   },
   modalContent: {
     backgroundColor: '#1a237e',

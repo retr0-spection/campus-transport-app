@@ -1,24 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, FlatList, TouchableOpacity, Image, Modal, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import axios from 'axios'; // Make sure to install this package
-import BusImage from '../../../assets/images/bus.png'
-import API from '@/api';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  Modal,
+  Alert,
+  useColorScheme,
+  ScrollView,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import axios from "axios"; // Make sure to install this package
+import BusImage from "../../../assets/images/bus.png";
+import API from "@/api";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Colors } from "@/constants/Colors";
 
 const App = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [departures, setDepartures] = useState([]);
   const [routes, setRoutes] = useState([]);
   const [selectedRoute, setSelectedRoute] = useState(null);
+  const colorScheme = useColorScheme();
 
   // Fetch departures (live schedule) from API
   const fetchLiveSchedule = async () => {
     try {
-        
       const response = await API.V1.Schedules.GetSchedules({});
       setDepartures(response); // Assuming the API returns a list of departures
     } catch (error) {
-      Alert.alert('Error', 'Failed to fetch live schedule.');
+      Alert.alert("Error", "Failed to fetch live schedule.");
       console.error(error);
     }
   };
@@ -26,10 +41,10 @@ const App = () => {
   // Fetch routes from API
   const fetchRoutes = async () => {
     try {
-      const response =  await API.V1.Schedules.GetRoutes({});
-      setRoutes(response); // Assuming the API returns a list of routes
+      const response = await API.V1.Schedules.GetRoutes({});
+      setRoutes(response);
     } catch (error) {
-      Alert.alert('Error', 'Failed to fetch routes.');
+      Alert.alert("Error", "Failed to fetch routes.");
       console.error(error);
     }
   };
@@ -42,109 +57,71 @@ const App = () => {
 
   const renderDeparture = ({ item }) => (
     <View style={styles.departure}>
-      <Text style={styles.departureTime}>{item.time || item.departureTime}</Text>
-      <Text>{item.route || item.routeName}</Text>
-      <Text>{item.destination || item.stopName}</Text>
+      <Text style={styles.departureTime}>
+        {item.time || item.departureTime}
+      </Text>
+      <Text style={{fontSize:18, fontWeight:'bold'}}>{item.route || item.routeName}</Text>
+      <Text style={{fontWeight:'medium', fontSize:16}}>{item.destination || item.stopName}</Text>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <Image source={BusImage} style={styles.centerImage} />
-      <Text style={styles.title}>Next Departures</Text>
-
-      <FlatList
-        data={departures}
-        renderItem={renderDeparture}
-        keyExtractor={(item, index) => index.toString()}
-      />
-
-      <TouchableOpacity style={styles.filterButton} onPress={() => setModalVisible(true)}>
-        <Ionicons name="filter" size={30} color="white" />
-      </TouchableOpacity>
-
-      {/* Modal for filtering routes */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.modalView}>
-          <Text style={styles.modalTitle}>Select Route</Text>
-          {routes.map((route, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.routeOption}
-              onPress={() => {
-                setSelectedRoute(route.routeId); // Handle route selection
-                setModalVisible(false);
-              }}
-            >
-              <Text style={styles.routeText}>{route.routeName}</Text>
-            </TouchableOpacity>
-          ))}
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setModalVisible(false)}
-          >
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
-
-      {/* <TouchableOpacity style={styles.reserveButton}>
-        <Text style={styles.reserveButtonText}>Subscribe to Route</Text>
-      </TouchableOpacity> */}
-
-    </View>
+    <SafeAreaView
+      style={{ backgroundColor: Colors[colorScheme ?? "light"].background }}
+    >
+      <View style={styles.container}>
+        <Text
+          style={[styles.title, { color: Colors[colorScheme ?? "light"].text }]}
+        >
+          Bus schedule
+        </Text>
+        <ScrollView style={{paddingHorizontal:'5%'}}>
+          {departures.map((item) => renderDeparture({ item }))}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor:'white'
+    backgroundColor: "white",
+    height: "100%",
   },
   centerImage: {
     width: 200,
     height: 200,
-    alignSelf: 'center',
     marginBottom: 20,
   },
   title: {
-    fontSize: 20,
-    alignSelf: 'center',
-    marginBottom: 10,
+    fontSize: 24,
+    fontWeight: "bold",
+    margin: 16,
   },
   departure: {
-    alignSelf: 'center',
-    marginBottom: 10,
+    marginVertical: 10,
   },
   departureTime: {
-    color: 'lightgreen',
-    fontWeight: 'bold',
+    color: "#093574",
+    fontWeight: "bold",
   },
   filterButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 40,
     right: 20,
-    backgroundColor: '#173470',
+    backgroundColor: "#173470",
     padding: 10,
     borderRadius: 20,
   },
   modalView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
     margin: 20,
     padding: 35,
     borderRadius: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
@@ -152,28 +129,28 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
   },
   reserveButton: {
-    backgroundColor: 'orange',
+    backgroundColor: "orange",
     padding: 10,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   reserveButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
   },
   navBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     borderTopWidth: 1,
-    borderColor: 'gray',
+    borderColor: "gray",
     paddingVertical: 10,
   },
   navItem: {
-    alignItems: 'center',
+    alignItems: "center",
     fontSize: 16,
   },
 });

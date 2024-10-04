@@ -14,21 +14,28 @@ import {
   Linking,
   ScrollView,
   TextInput,
+  useColorScheme,
 } from "react-native";
 import {
   GooglePlaceDetail,
   GooglePlacesAutocomplete,
 } from "react-native-google-places-autocomplete";
-import { requestNotificationPermission, setupNotifications } from '../../firebaseservices/firebaseService';
+import {
+  requestNotificationPermission,
+  setupNotifications,
+} from "../../firebaseservices/firebaseService";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import MapViewDirections from "react-native-maps-directions";
 import MapViewComponent from "@/components/navigation/MapComponent";
 import Suggestions from "@/components/navigation/Suggestions";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import SearchComponent from "@/components/navigation/SearchComponent";
-import * as Location from 'expo-location';
+import * as Location from "expo-location";
 import { Ionicons } from "@expo/vector-icons";
+import NavModalComponent from "@/components/navigation/navModal";
+import { useRouter } from "expo-router";
+import { Colors } from "@/constants/Colors";
 const { width, height } = Dimensions.get("window");
 
 const ASPECT_RATIO = width / height;
@@ -71,16 +78,14 @@ function InputAutocomplete({
   );
 }
 
-
-export interface CustomMarker  {
+export interface CustomMarker {
   id: string;
   name: string;
   coordinate: LatLng;
   type: string;
-};
+}
 
 export default function App() {
-
   /* useEffect(() => {
     const userId = 'user1';
     requestNotificationPermission(userId);
@@ -88,16 +93,32 @@ export default function App() {
   }, []); */
 
   const [origin, setOrigin] = useState<LatLng | null>(null);
-  const [destination, setDestination] = useState<LatLng | null>(null);
+  const [destination, setDestination] = useState<CustomMarker | null>(null);
   const [showDirections, setShowDirections] = useState(false);
+  const insets = useSafeAreaInsets();
+  const [query, setQuery] = React.useState<String>("");
+  const [expandSearch, setExpandSearch] = React.useState(true);
+  const [markers, setMarkers] = useState<CustomMarker[]>([]);
+  const [mode, setMode] = useState<String>("WALKING");
+  const modalRef = useRef();
+  const router = useRouter();
+  const queryRef = useRef()
+  const colorScheme = useColorScheme();
+
+  const editText = useCallback((text) => {
+    queryRef.current?.setNativeProps({text});
+    setQuery(text)
+  }, []);
 
   const mapref = useRef<MapView>(null);
 
   const moveTo = async (position: LatLng) => {
     const camera = await mapref.current?.getCamera();
     if (camera) {
-      camera.center = position;
-      mapref.current?.animateCamera(camera, { duration: 1000 });
+      const _position = {...position, latitude:position.latitude - 5e-3}
+      camera.center = _position;
+      camera.altitude = 5000
+      mapref.current?.animateCamera(camera);
     }
   };
 
@@ -112,103 +133,180 @@ export default function App() {
   const traceRoute = () => {
     if (origin && destination) {
       setShowDirections(true);
-      mapref.current?.fitToCoordinates([origin, destination], { edgePadding });
-    }
-  };
-
-  const onPlaceSelected = (details: GooglePlaceDetail | null, flag: "origin" | "destination") => {
-    const set = flag === "origin" ? setOrigin : setDestination;
-    const position = {
-      latitude: details?.geometry.location.lat || 0,
-      longitude: details?.geometry.location.lng || 0,
-    };
-    set(position);
-    moveTo(position);
-  };
-
-  const openNativeMapsApp = () => {
-    if (origin && destination) {
-      const originStr = `${origin.latitude},${origin.longitude}`;
-      const destinationStr = `${destination.latitude},${destination.longitude}`;
-
-      const url = Platform.select({
-        ios: `http://maps.apple.com/?saddr=${originStr}&daddr=${destinationStr}`,
-        android: `google.navigation:q=${destinationStr}&mode=d`,
+      moveTo(destination.coordinate);
+      mapref.current?.fitToCoordinates([origin, destination.coordinate], {
+        edgePadding,
       });
-
-      Linking.openURL(url as string)
-        .catch((err) => console.error('An error occurred', err));
     }
   };
-  const insets = useSafeAreaInsets()
-  const [expandSearch, setExpandSearch] = React.useState(true)
-  const [markers, setMarkers] = useState<CustomMarker[]>([]);
 
-  
-  
-  let mockMarkers: CustomMarker[] = []
-  
-  const apiUrl = 'http://ec2-52-40-184-137.us-west-2.compute.amazonaws.com/api/v1/navigation/poi'; 
- 
+  const apiUrl =
+    "http://ec2-52-40-184-137.us-west-2.compute.amazonaws.com/api/v1/navigation/poi";
 
-  React.useEffect(() => {
+  const getCurrentLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      console.error("Permission to access location was denied");
+      return;
+    }
 
-      const fetchData = async () => {
-        try {
-          const response = await fetch(apiUrl);
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          mockMarkers = data.map(item => ({
-              id: item.id,
-              name: item.name,
-              type: item.type,
-              coordinate: {
+    let location = await Location.getCurrentPositionAsync({});
+    const currentPosition = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+    setOrigin(currentPosition);
+  };
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      const _mockMarkers = data.map((item) => ({
+        id: item.id,
+        name: item.name,
+        type: item.type,
+        coordinate: {
           latitude: item.coordinates.latitude,
           longitude: item.coordinates.longitude,
         },
       }));
 
-        setMarkers(mockMarkers)
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      };
+      setMarkers(_mockMarkers);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-      const getCurrentLocation = async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          console.error('Permission to access location was denied');
-          return;
-        }
-    
-        let location = await Location.getCurrentPositionAsync({});
-        const currentPosition = {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        };
-      };
+  const onCloseCallBack = () => {
+    setDestination(null);
+    setShowDirections(false);
+  };
 
+  React.useEffect(() => {
+    fetchData();
+    getCurrentLocation();
+  }, []);
 
-  
-      fetchData();
-      getCurrentLocation(); 
-    }, []); 
+  React.useEffect(() => {
+    if (destination) {
+      traceRoute();
+      modalRef.current.show()
+    }
+  }, [destination]);
 
 
+  const highlightLocation = (location:CustomMarker) => {
+    setDestination(location)
+  }
+
+  const FilterMarkers = ({ query }) => {
+    const _ = markers.filter((marker) => marker.name.toLowerCase().includes(query.toLowerCase()));
+
+    return (
+      <View style={{ borderRadius: 10, marginTop: 10, backgroundColor:Colors[colorScheme ?? 'light'].background }}>
+        {_.map((item, index) => {
+          return (
+            <TouchableOpacity
+            onPress={() => {
+              queryRef.current?.blur()
+              editText(item.name)
+              setQuery(item.name)
+              highlightLocation(item)
+            }}
+            activeOpacity={0.7}
+              style={{
+         
+                borderTopLeftRadius: index == 0 ? 10 : 0,
+                borderTopRightRadius: index == 0 ? 10 : 0,
+                borderBottomLeftRadius: index == _.length - 1 ? 10 : 0,
+                borderBottomRightRadius: index == _.length - 1 ? 10 : 0,
+                width: "100%",
+                padding: 10,
+                paddingVertical:15,
+                borderColor: "#bebebe",
+              }}
+            >
+              <Text style={{color:Colors[colorScheme ?? 'light'].text}}>{item.name}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
-     <MapViewComponent scrollEnabled={true} markers={markers} />
-      <View style={{position:'absolute', top:insets.top,left:0, right:0,paddingHorizontal:30, flexDirection:'row', justifyContent:'space-between', alignItems:'center'}}>
-        <View style={{backgroundColor:'white', padding:5, borderRadius:13}}>
-          <Ionicons name="notifications-outline" size={27} />
+      <MapViewComponent
+        scrollEnabled={true}
+        ref={mapref}
+        origin={origin}
+        destination={destination}
+        showDirections={showDirections}
+        markers={markers}
+        modalRef={modalRef}
+        mode={mode}
+        setMode={setMode}
+      />
+      <View
+        style={{
+          position: "absolute",
+          top: insets.top,
+          left: 0,
+          right: 0,
+          paddingHorizontal: '5%',
+          flexDirection: "row",
+          justifyContent: "space-between",
+          gap:20,
+        }}
+      >
+        <View style={{flexGrow:0, alignSelf:'flex-start',flexShrink:0, borderRadius: 10,backgroundColor: Colors[colorScheme ?? 'light'].background, padding: 5  }}>
+          <Ionicons
+            name="notifications-outline"
+            size={27}
+            onPress={() => router.push("/notifications")}
+            color={Colors[colorScheme ?? 'light'].text}
+          />
         </View>
-        <TextInput placeholder="Search places" style={{backgroundColor:'white', width:Dimensions.get('window').width * 0.75, padding:10, borderRadius:10}}/>
+        <View>
+          <TextInput
+            ref={queryRef}
+            placeholder="Search places on campus"
+            placeholderTextColor={'gray'}
+            onChangeText={editText}
+            onFocus={() => setExpandSearch(true)}
+            onBlur={() => setExpandSearch(false)}
+            autoCorrect={false}
+            autoComplete="off"
+            style={{
+              backgroundColor:Colors[colorScheme ?? 'light'].background,
+              color:Colors[colorScheme ?? 'light'].text,
+              width: Dimensions.get("window").width * 0.75,
+              padding: 10,
+              borderRadius: 10,
+            }}
+          />
+          {query.length && expandSearch ? <FilterMarkers query={query} /> : null}
+        </View>
       </View>
-      <Suggestions markers={markers} />
-      {/* <SearchComponent /> */}
+      <Suggestions
+        markers={markers}
+        modalRef={modalRef}
+        highlightLocation={highlightLocation}
+        editText={editText}
+        queryRef={queryRef}
+        origin={origin}
+      />
+      <NavModalComponent
+        ref={modalRef}
+        onCloseCallBack={onCloseCallBack}
+        destination={destination}
+        origin={origin}
+        setMode={setMode}
+      />
     </View>
   );
 }

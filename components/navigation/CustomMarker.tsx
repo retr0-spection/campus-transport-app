@@ -14,9 +14,9 @@ const Icon = ({type}) => {
   );
 };
 
-const CustomMarker = ({ id, coordinate, type, name }) => {
+const CustomMarker = ({ id, coordinate, origin, type, name, openNativeMapsApp }) => {
   return (
-    <Marker key={id} coordinate={coordinate}>
+    <Marker key={id} coordinate={coordinate} onPress={() => openNativeMapsApp(origin,coordinate)}>
       <View style={{padding:5, justifyContent:'center', alignItems:'center', flexDirection:'row', backgroundColor:'white', borderRadius:10, paddingHorizontal:10}}>
         <Icon type={type} />
         <Text style={{paddingHorizontal:10, fontSize:12}}>{name}</Text>
