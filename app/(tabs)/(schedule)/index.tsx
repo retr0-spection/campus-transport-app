@@ -18,6 +18,7 @@ import BusImage from "../../../assets/images/bus.png";
 import API from "@/api";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
+import { Feather } from '@expo/vector-icons';
 
 const App = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -66,16 +67,22 @@ const App = () => {
     <SafeAreaView
       style={{ backgroundColor: Colors[colorScheme ?? "light"].background }}
     >
-      <View style={[styles.container, { backgroundColor: Colors[colorScheme ?? "light"].background}]}>
+     
+        <ScrollView style={{paddingHorizontal:'5%'}}>
+        <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingRight:20}}>
         <Text
           style={[styles.title, { color: Colors[colorScheme ?? "light"].text }]}
         >
           Bus schedule
         </Text>
-        <ScrollView style={{paddingHorizontal:'5%'}}>
+        <TouchableOpacity activeOpacity={.7} onPress={() => null}>
+          <Feather name="more-horizontal" color={Colors[colorScheme ?? 'light'].text} size={20} />
+
+          </TouchableOpacity>
+          </View>
           {departures?.map((item) => renderDeparture({ item }))}
         </ScrollView>
-      </View>
+     
     </SafeAreaView>
   );
 };
