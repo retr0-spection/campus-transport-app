@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Button,
   useColorScheme,
+  Dimensions,
 } from "react-native";
 import React, { useRef, useState, useEffect } from "react";
 import ActionSheet from "react-native-actions-sheet";
@@ -139,7 +140,7 @@ const NavModalComponent = React.forwardRef((props, ref) => {
 
   return (
     <ActionSheet
-      containerStyle={{ height: "50%", backgroundColor:Colors[colorScheme ?? 'light'].background }}
+      containerStyle={{ height: "60%", backgroundColor:Colors[colorScheme ?? 'light'].background }}
       ref={ref}
       onClose={onCloseCallBack}
     >
@@ -167,7 +168,7 @@ const NavModalComponent = React.forwardRef((props, ref) => {
               origin={destination}
               // modalRef={modalRef}
               destination={destination}
-              style={{ width: "100%", height: 180, borderRadius: 10 }}
+              style={{ width: "100%", height: Dimensions.get('window').height * .20, borderRadius: 10 }}
             />
           </View>
         </View>

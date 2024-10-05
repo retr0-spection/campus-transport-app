@@ -11,7 +11,7 @@ import MapViewDirections from "react-native-maps-directions";
 import CustomMarker from "./CustomMarker";
 
 const MapViewComponent = React.forwardRef((props, ref) => {
-  const {origin, destination, showDirections, mode, setMode, zoom} = props
+  const {origin, destination, showDirections, mode, setMode, zoom, rentalStations, highlightLocation} = props
   const markers = props.markers || [];
 
   const { width, height } = Dimensions.get("window");
@@ -97,6 +97,21 @@ const MapViewComponent = React.forwardRef((props, ref) => {
         />
         
       )}
+
+      {!destination && rentalStations?.map((marker) => {
+        console.warn(marker)
+        return <CustomMarker
+        id={marker.id}
+        name={`${marker.name.split(' ')[0]} ${marker.name.split(' ')[1] != 'Rental' ? marker.name.split(' ')[1] : ''}`}
+        showModal={highlightLocation}
+        coordinate={marker.coordinates}
+        origin={INITIAL_POSITION}
+        type={'Station'}
+        marker={{...marker, coordinate:marker.coordinates, type:'Station'}}
+      /> 
+      })}
+
+      
 
       {/* {markers.map((marker) => {
 

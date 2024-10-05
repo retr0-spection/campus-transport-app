@@ -12,7 +12,7 @@ const TransportationModes = ({activeIndex, setActiveIndex}) => {
   ];
 
   return (
-    <View style={{ flexDirection: 'row', paddingVertical:10, justifyContent:'space-between'}}>
+    <View style={{ flexDirection: 'row', gap:5, paddingVertical:10, justifyContent:'space-between'}}>
       {modes.map((mode, index) => (
         <TouchableOpacity
           key={index}
@@ -22,12 +22,14 @@ const TransportationModes = ({activeIndex, setActiveIndex}) => {
             backgroundColor: activeIndex === index ? mode.color : '#fff',
             flexDirection: 'row',
             alignItems: 'center',
+            borderColor:'gray',
+            borderWidth:1
           }}
           onPress={() => setActiveIndex(index)}
         >
           <Ionicons
             name={mode.icon}
-            size={24}
+            size={13}
             color={activeIndex === index ? mode.activeColor : mode.color}
           />
           <Text

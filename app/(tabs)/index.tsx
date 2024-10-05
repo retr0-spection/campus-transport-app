@@ -38,6 +38,13 @@ import { Ionicons } from "@expo/vector-icons";
 import NavModalComponent from "@/components/navigation/navModal";
 import { useRouter } from "expo-router";
 import { Colors } from "@/constants/Colors";
+import API from "@/api";
+import { useSelector } from "react-redux";
+import { selectProfile } from "@/redux/slices/userSlice";
+
+import * as Notifications from 'expo-notifications';
+
+
 const { width, height } = Dimensions.get("window");
 
 const ASPECT_RATIO = width / height;
@@ -88,43 +95,52 @@ export interface CustomMarker {
 }
 
 export default function App() {
+
+  const registerForPushNotifications = async () => {
+    // Request notification permissions
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    // Check if the permission has already been granted
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    // Check if the final status is granted
+    if (finalStatus !== 'granted') {
+      alert("Notification permission not granted");
+      return;
+    }
+
+    // Now that permissions are granted, retrieve the token
+    try {
+      const token = (await Notifications.getExpoPushTokenAsync({ projectId: 'kudunot' })).data;
+      alert("Expo Push Token: " + token); // Ensure to show the token correctly
+    } catch (error) {
+      alert("Failed to get the push token: " + error.message);
+    }
+  };
+
+  const sendNotification = async () => {
+    try {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "My Notification Title",
+          body: "My Notification Message",
+        },
+        trigger: null, // immediately
+      });
+    } catch (error) {
+      alert(error)
+      console.error("Error sending notification:", error);
+    }
+  };
+
   /* useEffect(() => {
     const userId = 'user1';
     requestNotificationPermission(userId);
     setupNotifications();
-  }, []); */
-
- /*  useEffect(() => {
-    const requestUserPermission = async () => {
-      const authStatus = await messaging().requestPermission();
-      const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-        alert("hi")
-
-      if (enabled) {
-        console.log('Authorization status:', authStatus);
-      }
-    };
-
-    requestUserPermission();
-  }, []);
-
-  useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-    });
-  
-    const getToken = async () => {
-      const token = await messaging().getToken();
-      console.log('FCM Token:', token);
-      // Send this token to your server
-    };
-  
-    getToken();
-  
-    return unsubscribe;
   }, []); */
 
   const [origin, setOrigin] = useState<LatLng | null>(null);
@@ -135,10 +151,12 @@ export default function App() {
   const [expandSearch, setExpandSearch] = React.useState(true);
   const [markers, setMarkers] = useState<CustomMarker[]>([]);
   const [mode, setMode] = useState<String>("WALKING");
+  const [rentalStations, setRentalStations] = React.useState([])
   const modalRef = useRef();
   const router = useRouter();
   const queryRef = useRef()
   const colorScheme = useColorScheme();
+  const profile = useSelector(selectProfile)
 
   const editText = useCallback((text) => {
     queryRef.current?.setNativeProps({text});
@@ -221,9 +239,23 @@ export default function App() {
     setShowDirections(false);
   };
 
+
+  const _getRentalStations = async () => {
+    const config = {
+      headers:{
+        Authorization:'Bearer ' + profile.token
+      }
+    }
+    const stations = await API.V1.Rental.GetRentalStations(config)
+    setRentalStations(stations)
+
+  } 
+
   React.useEffect(() => {
     fetchData();
     getCurrentLocation();
+    _getRentalStations();
+    registerForPushNotifications();
   }, []);
 
   React.useEffect(() => {
@@ -282,9 +314,11 @@ export default function App() {
         destination={destination}
         showDirections={showDirections}
         markers={markers}
+        rentalStations={rentalStations}
         modalRef={modalRef}
         mode={mode}
         setMode={setMode}
+        highlightLocation={highlightLocation}
       />
       <View
         style={{
@@ -292,16 +326,17 @@ export default function App() {
           top: insets.top,
           left: 0,
           right: 0,
-          paddingHorizontal: 30,
+          paddingHorizontal: '5%',
           flexDirection: "row",
           justifyContent: "space-between",
+          gap:20,
         }}
       >
         <View style={{flexGrow:0, alignSelf:'flex-start',flexShrink:0, borderRadius: 10,backgroundColor: Colors[colorScheme ?? 'light'].background, padding: 5  }}>
           <Ionicons
             name="notifications-outline"
             size={27}
-            onPress={() => router.push("/notifications")}
+            onPress={() => /* router.push("/notifications") */sendNotification}
             color={Colors[colorScheme ?? 'light'].text}
           />
         </View>
@@ -326,14 +361,14 @@ export default function App() {
           {query.length && expandSearch ? <FilterMarkers query={query} /> : null}
         </View>
       </View>
-      <Suggestions
+     {origin ? <Suggestions
         markers={markers}
         modalRef={modalRef}
         highlightLocation={highlightLocation}
         editText={editText}
         queryRef={queryRef}
         origin={origin}
-      />
+      /> : null}
       <NavModalComponent
         ref={modalRef}
         onCloseCallBack={onCloseCallBack}
