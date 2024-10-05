@@ -18,7 +18,6 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Location from "expo-location";
 
 
-
 const Settings = () => {
   const colorScheme = useColorScheme();
   const ref = useRef();
