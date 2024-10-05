@@ -255,7 +255,7 @@ export default function App() {
     fetchData();
     getCurrentLocation();
     _getRentalStations();
-    registerForPushNotifications();
+    //registerForPushNotifications();
   }, []);
 
   React.useEffect(() => {
