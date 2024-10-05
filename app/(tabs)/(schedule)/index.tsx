@@ -68,7 +68,7 @@ const App = () => {
       style={{ backgroundColor: Colors[colorScheme ?? "light"].background }}
     >
      
-        <ScrollView style={{paddingHorizontal:'5%'}}>
+        <ScrollView style={{paddingHorizontal:'5%', height:'100%'}}>
         <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingRight:20}}>
         <Text
           style={[styles.title, { color: Colors[colorScheme ?? "light"].text }]}

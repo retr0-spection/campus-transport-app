@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/Colors";
-import { setAuthenticated, setProfile } from "@/redux/slices/userSlice";
+import { selectProfile, setAuthenticated, setProfile } from "@/redux/slices/userSlice";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import axios from "axios";
 import { useRouter } from "expo-router";
 import React, { useRef } from "react";
 import {
@@ -13,7 +14,9 @@ import {
 import ActionSheet from "react-native-actions-sheet";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import * as Location from "expo-location";
+
 
 const Settings = () => {
   const colorScheme = useColorScheme();
@@ -21,7 +24,34 @@ const Settings = () => {
   const [dispatched, setDispatched] = React.useState(false)
   const dispatch = useDispatch()
   const router = useRouter()
+  const profile = useSelector(selectProfile)
 
+
+  const getCurrentLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      console.error("Permission to access location was denied");
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    const currentPosition = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+    return currentPosition
+  };
+
+
+  const sendLocation = async () => {
+    const config = {
+      headers: {
+        Authorization:'Bearer ' + profile.token
+      }
+    }
+    const location = await getCurrentLocation()
+    const res = await axios.post('https://campus-safety.azurewebsites.net/panic', {location}, config)
+  }
 
   return (
     <SafeAreaView style={{ backgroundColor: Colors[colorScheme].background }}>
@@ -94,7 +124,10 @@ const Settings = () => {
           <TouchableOpacity
             style={{  gap: 10, alignItems: "center", backgroundColor:'red', width:'100%', paddingHorizontal:'30%',paddingVertical:'2%', borderRadius:5 }}
             activeOpacity={0.7}
-            onPress={() =>setDispatched(true)}
+            onPress={() => {
+              setDispatched(true)
+              sendLocation()
+            }}
           >
       
             <Text style={{ fontWeight: "bold", fontSize: 18, color: "white" }}>

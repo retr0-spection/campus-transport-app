@@ -194,7 +194,7 @@ const BicycleRentalScreen = () => {
                 return (
                   <TouchableOpacity style={styles.locationContainer}>
                     <Text style={styles.locationIcon}>📍</Text>
-                    <Text style={styles.locationText}>
+                    <Text style={[styles.locationText]}>
                       {selectedRentalStation}
                     </Text>
                   </TouchableOpacity>
@@ -203,7 +203,7 @@ const BicycleRentalScreen = () => {
               renderItem={(item, index, isSelected) => {
                 return (
                   <View style={styles.locationContainer}>
-                    <Text style={styles.locationText}>{item}</Text>
+                    <Text style={[styles.locationText, {color:Colors[colorScheme ?? "light"].text}]}>{item}</Text>
                   </View>
                 );
               }}
