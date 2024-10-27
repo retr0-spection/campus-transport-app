@@ -72,7 +72,6 @@ const _load = async () => {
   const { distance:_distance, destinationInfo:_destinationInfo, photoUrls } = await getDistanceAndDestinationInfo(origin, marker);
   setDestinationInfo(_destinationInfo)
   setDistance(_distance)
-  console.warn(photoUrls)
   setPhotos(photoUrls)
 }
 
