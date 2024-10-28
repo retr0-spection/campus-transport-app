@@ -44,6 +44,9 @@ import { selectProfile } from "@/redux/slices/userSlice";
 
 import * as Notifications from 'expo-notifications';
 
+import { fetchNotifications } from '../../redux/slices/notificationSlice';
+import {store} from "../../redux/store";
+
 
 const { width, height } = Dimensions.get("window");
 
@@ -136,6 +139,10 @@ export default function App() {
       console.error("Error sending notification:", error);
     }
   };
+
+    useEffect(() => {
+      store.dispatch(fetchNotifications());
+  }, []);
 
   /* useEffect(() => {
     const userId = 'user1';
@@ -336,7 +343,7 @@ export default function App() {
           <Ionicons
             name="notifications-outline"
             size={27}
-            onPress={() => /* router.push("/notifications") */sendNotification}
+            onPress={() => router.push("/notifications")/* sendNotification */}
             color={Colors[colorScheme ?? 'light'].text}
           />
         </View>
