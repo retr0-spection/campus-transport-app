@@ -237,7 +237,7 @@ const NotificationsScreen = () => {
                             <Text style={{color:"#173470", fontWeight:'bold'}}>{earlierNotifications.length}</Text>
                         </View>
                     </View>
-                    {Notifications.map((item, index) => (
+                    {earlierNotifications.map((item, index) => (
                         <Notification {...item} key={index}/>
                     ))}
                 </View>}
