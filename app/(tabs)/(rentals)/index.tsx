@@ -45,6 +45,7 @@ const RentalScreen: React.FC = () => {
         }
       }
       const res = await API.V1.Rental.GetVehicles(config)
+
       setVehicles(res)
       setLoading(false)
     }
@@ -59,9 +60,9 @@ const RentalScreen: React.FC = () => {
       <ScrollView>
         <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingRight:20}}>
           <Text style={[styles.title, {color:Colors[colorScheme ?? 'light'].text}]}>Rentals</Text>
-          {/* <TouchableOpacity activeOpacity={.7} onPress={() => router.push('/(rentals)/rental-history')}>
-          <FontAwesome name="history" color={Colors[colorScheme ?? 'light'].text} size={20} />
-          </TouchableOpacity> */}
+          <TouchableOpacity activeOpacity={.7} onPress={() => router.push('/(rentals)/rental-history')}>
+            <FontAwesome name="history" color={Colors[colorScheme ?? 'light'].text} size={20} />
+          </TouchableOpacity>
  
         </View>
        {loading ? <View style={{height:'100%', width:'100%', justifyContent:'center', alignItems:'center'}}>

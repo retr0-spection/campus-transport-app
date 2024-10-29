@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios"
 
 
-const domain = 'https://gateway.tandemworkflow.com'
+const domain = 'https://gateway.tandemworkflow.com/api/v1'
 const testDomain = 'http://localhost:3000'
 
 
@@ -24,49 +24,48 @@ export interface RentalItem {
 
 const Auth = {
     Verify : async (config: AxiosRequestConfig): Promise<VerifyResponse> => {
-        return (await axios.post(domain + '/api/v1/auth/google-auth', {}, config)).data
+        return (await axios.post(domain + '/auth/google-auth', {}, config)).data
     }
 }
 
 const RentalAPI = {
     GetVehicles : async (config: AxiosRequestConfig): Promise<RentalItem[]> => {
-        const response = await axios.get(domain + '/api/v1/rental/vehicles', config)
-
+        const response = await axios.get(domain + 'rental/vehicles', config)
         return response.data
     },
-    GetRentalHistory : async (id:string, config: AxiosRequestConfig): Promise<RentalItem[]> => {
-        const response = await axios.get(domain + `/api/v1/rental/rentals?userId=${id}`, config)
+    GetRentalHistory : async (config: AxiosRequestConfig): Promise<RentalItem[]> => {
+        const response = await axios.get(domain + `rental/rentals`, config)
 
         return response.data
     },
     GetVehicleByType: async (type:string, config: AxiosRequestConfig): Promise<RentalItem[]> => {
-        const response = await axios.get(domain + `/api/v1/rental/vehicles/${type}`, config)
+        const response = await axios.get(domain + `/rental/vehicles/${type}`, config)
         return response.data
     },
     GetVehicleByStation: async (station:string, config: AxiosRequestConfig): Promise<RentalItem[]> => {
-        const response = await axios.get(domain + `/api/v1/rental/station/${station}`, config)
+        const response = await axios.get(domain + `/rental/station/${station}`, config)
         return response.data
     },
     GetRentalStations: async (config:AxiosRequestConfig) => {
-        const response = await axios.get(domain + `/api/v1/navigation/rental`, config)
+        const response = await axios.get(domain + `/navigation/rental`, config)
         return response.data
     },
     CreateRentalObject:async (payload, config:AxiosRequestConfig) => {
-        const response = await axios.post(domain + '/api/v1/rental/rentals/add',payload, config)
+        const response = await axios.post(domain + '/rental/rentals/add',payload, config)
         return response.data
     },
     GetStationVehicles:async (station, config:AxiosRequestConfig) => {
-        const response = await axios.get(domain + `/api/v1/rental/station/${station}`, config)
+        const response = await axios.get(domain + `/rental/station/${station}`, config)
         return response.data
     }
 }
 
 const Schedules = {
     GetSchedules : async (config: AxiosRequestConfig): Promise<any> => {
-        return (await axios.get(domain + '/api/v1/bus-schedule/live-schedule', config)).data
+        return (await axios.get(domain + '/bus-schedule/live-schedule', config)).data
     },
     GetRoutes : async (config: AxiosRequestConfig): Promise<any> => {
-        return (await axios.get(domain + '/api/v1/bus-schedule/routenames', config)).data
+        return (await axios.get(domain + '/bus-schedule/routenames', config)).data
     },
 }
 
