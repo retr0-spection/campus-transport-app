@@ -3,8 +3,8 @@ import axios from 'axios';
 
 export const fetchNotifications = createAsyncThunk(
     'notifications/fetchNotifications',
-    async () => {
-        const response = await axios.get('https://gateway.tandemworkflow.com/api/v1/notification/notifications/user/user1');
+    async (id) => {
+        const response = await axios.get(`https://gateway.tandemworkflow.com/api/v1/notification/notifications/user/${id}`);
         return response.data;
     }
 );

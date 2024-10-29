@@ -11,6 +11,7 @@ import {
   Modal,
   useColorScheme,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios"; // Make sure to install this package
@@ -26,12 +27,14 @@ const App = () => {
   const [routes, setRoutes] = useState([]);
   const [selectedRoute, setSelectedRoute] = useState(null);
   const colorScheme = useColorScheme();
+  const [loading, setLoading] = useState(true)
 
   // Fetch departures (live schedule) from API
   const fetchLiveSchedule = async () => {
     try {
       const response = await API.V1.Schedules.GetSchedules({});
       setDepartures(response); // Assuming the API returns a list of departures
+      setLoading(false)
     } catch (error) {
       console.error(error);
     }
@@ -68,20 +71,20 @@ const App = () => {
       style={{ backgroundColor: Colors[colorScheme ?? "light"].background }}
     >
      
-        <ScrollView style={{paddingHorizontal:'5%'}}>
+        {loading ? <View style={{height:'100%', width:'100%', justifyContent:'center', alignItems:'center'}}><ActivityIndicator color={'white'} /></View> : <ScrollView style={{paddingHorizontal:'5%'}}>
         <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingRight:20}}>
         <Text
           style={[styles.title, { color: Colors[colorScheme ?? "light"].text }]}
         >
           Bus schedule
         </Text>
-        <TouchableOpacity activeOpacity={.7} onPress={() => null}>
+        {/* <TouchableOpacity activeOpacity={.7} onPress={() => null}>
           <Feather name="more-horizontal" color={Colors[colorScheme ?? 'light'].text} size={20} />
 
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           </View>
           {departures?.map((item) => renderDeparture({ item }))}
-        </ScrollView>
+        </ScrollView>}
      
     </SafeAreaView>
   );

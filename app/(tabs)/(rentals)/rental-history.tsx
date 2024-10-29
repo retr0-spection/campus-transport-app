@@ -1,11 +1,15 @@
 //All the rentals that a user has had
 // Date and time, vehicle pick up rental station & vehicle drop off rental station
 import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScooterImage from '../../../assets/images/scooter.png';
 import SkateboardImage from '../../../assets/images/skateboard.png';
 import BicycleImage from '../../../assets/images/bicycle.png';
+import API from '@/api';
+import { useSelector } from 'react-redux';
+import { selectProfile } from '@/redux/slices/userSlice';
+import { Colors } from '@/constants/Colors';
 
 interface RentalHistoryItem {
   name: string;
@@ -36,24 +40,58 @@ const rentalHistory: RentalHistoryItem[] = [
 ];
 
 const RentalHistoryScreen: React.FC = () => {
+  const profile = useSelector(selectProfile)
+  const [rentalHistory, setRentalHistory] = React.useState([])
+  const colorScheme = useColorScheme()
+
+
+  const imageToRender = (type:string) => {
+    if (type == 'Scooter'){
+      return ScooterImage
+    } else if (type == 'Bicycle'){
+      return BicycleImage
+    }else if (type == 'Skateboard'){
+      return SkateboardImage
+    }
+  }
+
+
+  const getHistory = async () => {
+    const config = {
+      headers: {
+        Authorization:'Bearer ' + profile.token
+      }
+    }
+
+    const history = await API.V1.Rental.GetRentalHistory(profile.id, config)
+    console.warn(history.data)
+    setRentalHistory(history.data)
+  }
+
+  React.useEffect(() => {
+    getHistory()
+  },[])
+
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, {backgroundColor: Colors[colorScheme ?? 'light'].background}]}>
       <Text style={styles.title}>Rental History</Text>
       <ScrollView>
-        {rentalHistory.map((item, index) => (
-          <View key={index} style={styles.historyItem}>
-            <Image source={item.image} style={styles.image} />
+        {rentalHistory.map((item, index) => {
+          const image = imageToRender(item.name)
+
+          return <View key={index} style={styles.historyItem}>
+            <Image source={image} style={styles.image} />
             <View style={styles.itemInfo}>
               <Text style={styles.itemName}>{item.name}</Text>
               <Text style={styles.dateText}>Date: {item.date}</Text>
               <Text style={styles.priceText}>Price: {item.price}</Text>
             </View>
           </View>
-        ))}
+}
+        )}
       </ScrollView>
-      <TouchableOpacity style={styles.clearButton}>
-        <Text style={styles.clearButtonText}>Clear History</Text>
-      </TouchableOpacity>
+     
     </SafeAreaView>
   );
 };
@@ -69,6 +107,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 16,
     textAlign: 'center',
+    color:'white'
   },
   historyItem: {
     flexDirection: 'row',

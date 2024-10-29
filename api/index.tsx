@@ -34,6 +34,11 @@ const RentalAPI = {
 
         return response.data
     },
+    GetRentalHistory : async (id:string, config: AxiosRequestConfig): Promise<RentalItem[]> => {
+        const response = await axios.get(domain + `/api/v1/rental/rentals?userId=${id}`, config)
+
+        return response.data
+    },
     GetVehicleByType: async (type:string, config: AxiosRequestConfig): Promise<RentalItem[]> => {
         const response = await axios.get(domain + `/api/v1/rental/vehicles/${type}`, config)
         return response.data
@@ -58,7 +63,7 @@ const RentalAPI = {
 
 const Schedules = {
     GetSchedules : async (config: AxiosRequestConfig): Promise<any> => {
-        return (await axios.get(domain + '/api/v1/bus-schedule/liveschedule?time=08:00', config)).data
+        return (await axios.get(domain + '/api/v1/bus-schedule/live-schedule', config)).data
     },
     GetRoutes : async (config: AxiosRequestConfig): Promise<any> => {
         return (await axios.get(domain + '/api/v1/bus-schedule/routenames', config)).data

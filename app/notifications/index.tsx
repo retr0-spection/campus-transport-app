@@ -177,7 +177,9 @@ const NotificationsScreen = () => {
                     } else {
                         status !="read" && markAsRead(_id); // This should call your function to mark the notification as read
                         setSelectedAlert({ _id, type, message, createdAt, status });
-                        setModalVisible(true);
+                        if (selectedAlert?.type == 'ScheduleChange'){
+                            setModalVisible(true);
+                        }
                     }
                 }}                
                 onLongPress={() => toggleSelectNotification(_id)}
@@ -256,7 +258,7 @@ const NotificationsScreen = () => {
                         <Text style={styles.modalTimestamp}>{new Date(selectedAlert?.createdAt).toLocaleString('en-US', options).replace(',', '')}</Text>
                         <TouchableOpacity
                             style={styles.closeButton}
-                            onPress={() => setModalVisible(false)}
+                            onPress={() => router.push('/(schedule)')}
                         >
                             <Text style={styles.closeButtonText}>View Schedule</Text>
                         </TouchableOpacity>

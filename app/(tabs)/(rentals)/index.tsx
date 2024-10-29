@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, useColorScheme } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ScrollView, useColorScheme, ActivityIndicator, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScooterImage from '../../../assets/images/scooter.png'
 import Skateboard from '../../../assets/images/skateboard.png'
@@ -9,8 +9,7 @@ import { Colors } from '@/constants/Colors';
 import API, { RentalItem } from '@/api';
 import { useSelector } from 'react-redux';
 import { selectProfile } from '@/redux/slices/userSlice';
-import { Feather } from '@expo/vector-icons';
-
+import { Feather, FontAwesome } from '@expo/vector-icons';
 
 
 
@@ -20,6 +19,10 @@ const RentalScreen: React.FC = () => {
   const profile = useSelector(selectProfile)
 
   const [vehicles, setVehicles] = React.useState<RentalItem[]>([])
+  const [loading, setLoading] = React.useState(true)
+
+
+ 
 
 
 
@@ -33,6 +36,8 @@ const RentalScreen: React.FC = () => {
       }
     }
 
+    
+
     const getVehicles = async () => {
       const config = {
         headers: {
@@ -40,9 +45,8 @@ const RentalScreen: React.FC = () => {
         }
       }
       const res = await API.V1.Rental.GetVehicles(config)
-      console.warn(res)
       setVehicles(res)
-
+      setLoading(false)
     }
 
     React.useEffect(() => {
@@ -55,11 +59,14 @@ const RentalScreen: React.FC = () => {
       <ScrollView>
         <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingRight:20}}>
           <Text style={[styles.title, {color:Colors[colorScheme ?? 'light'].text}]}>Rentals</Text>
-          <TouchableOpacity activeOpacity={.7} onPress={() => null}>
-          <Feather name="more-horizontal" color={Colors[colorScheme ?? 'light'].text} size={20} />
-
-          </TouchableOpacity>
+          {/* <TouchableOpacity activeOpacity={.7} onPress={() => router.push('/(rentals)/rental-history')}>
+          <FontAwesome name="history" color={Colors[colorScheme ?? 'light'].text} size={20} />
+          </TouchableOpacity> */}
+ 
         </View>
+       {loading ? <View style={{height:'100%', width:'100%', justifyContent:'center', alignItems:'center'}}>
+          <ActivityIndicator color={'white'} />
+       </View> : <View>
         {vehicles.map((item, index) => {
           const image = imageToRender(item.name)
           return (
@@ -74,7 +81,11 @@ const RentalScreen: React.FC = () => {
             </View>
           </View>
         )})}
+
+        </View>  }
       </ScrollView>
+   
+
     </SafeAreaView>
   );
 };

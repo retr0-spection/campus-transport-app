@@ -118,7 +118,7 @@ export default function App() {
 
     // Now that permissions are granted, retrieve the token
     try {
-      const token = (await Notifications.getExpoPushTokenAsync({ projectId: 'kudunot' })).data;
+      const token = (await Notifications.getExpoPushTokenAsync({ projectId: 'com.campustransport.app' })).data;
       alert("Expo Push Token: " + token); // Ensure to show the token correctly
     } catch (error) {
       alert("Failed to get the push token: " + error.message);
@@ -141,14 +141,14 @@ export default function App() {
   };
 
     useEffect(() => {
-      store.dispatch(fetchNotifications());
+      store.dispatch(fetchNotifications(profile.id));
   }, []);
 
-  /* useEffect(() => {
-    const userId = 'user1';
+  useEffect(() => {
+    const userId = profile.id;
     requestNotificationPermission(userId);
     setupNotifications();
-  }, []); */
+  }, []);
 
   const [origin, setOrigin] = useState<LatLng | null>(null);
   const [destination, setDestination] = useState<CustomMarker | null>(null);

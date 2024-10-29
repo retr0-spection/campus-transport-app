@@ -14,7 +14,7 @@ export const requestNotificationPermission = async (userId: string) => {
         const deviceType = Platform.OS;
         
         try {
-            await axios.post(`http://localhost/users/${userId}/device`, {
+            await axios.post(`https://gateway.tandemworkflow.com/api/v1/notification/users/${userId}/device`, {
                 deviceToken: token,
                 deviceType,
             }, {
