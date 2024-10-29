@@ -24,8 +24,10 @@ import {
   requestNotificationPermission,
   setupNotifications,
 } from "../../firebaseservices/firebaseService";
+import firebase from '@react-native-firebase/app';
+import messaging from '@react-native-firebase/messaging';
 
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import MapViewDirections from "react-native-maps-directions";
 import MapViewComponent from "@/components/navigation/MapComponent";
 import Suggestions from "@/components/navigation/Suggestions";
@@ -39,6 +41,13 @@ import { Colors } from "@/constants/Colors";
 import API from "@/api";
 import { useSelector } from "react-redux";
 import { selectProfile } from "@/redux/slices/userSlice";
+
+import * as Notifications from 'expo-notifications';
+
+import { fetchNotifications } from '../../redux/slices/notificationSlice';
+import {store} from "../../redux/store";
+
+
 const { width, height } = Dimensions.get("window");
 
 const ASPECT_RATIO = width / height;
@@ -89,11 +98,57 @@ export interface CustomMarker {
 }
 
 export default function App() {
-  /* useEffect(() => {
-    const userId = 'user1';
+
+  const registerForPushNotifications = async () => {
+    // Request notification permissions
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    // Check if the permission has already been granted
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    // Check if the final status is granted
+    if (finalStatus !== 'granted') {
+      alert("Notification permission not granted");
+      return;
+    }
+
+    // Now that permissions are granted, retrieve the token
+    try {
+      const token = (await Notifications.getExpoPushTokenAsync({ projectId: 'com.campustransport.app' })).data;
+      alert("Expo Push Token: " + token); // Ensure to show the token correctly
+    } catch (error) {
+      alert("Failed to get the push token: " + error.message);
+    }
+  };
+
+  const sendNotification = async () => {
+    try {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "My Notification Title",
+          body: "My Notification Message",
+        },
+        trigger: null, // immediately
+      });
+    } catch (error) {
+      alert(error)
+      console.error("Error sending notification:", error);
+    }
+  };
+
+    useEffect(() => {
+      store.dispatch(fetchNotifications(profile.id));
+  }, []);
+
+  useEffect(() => {
+    const userId = profile.id;
     requestNotificationPermission(userId);
     setupNotifications();
-  }, []); */
+  }, []);
 
   const [origin, setOrigin] = useState<LatLng | null>(null);
   const [destination, setDestination] = useState<CustomMarker | null>(null);
@@ -206,7 +261,8 @@ export default function App() {
   React.useEffect(() => {
     fetchData();
     getCurrentLocation();
-    _getRentalStations()
+    _getRentalStations();
+    //registerForPushNotifications();
   }, []);
 
   React.useEffect(() => {
@@ -287,7 +343,7 @@ export default function App() {
           <Ionicons
             name="notifications-outline"
             size={27}
-            onPress={() => router.push("/notifications")}
+            onPress={() => router.push("/notifications")/* sendNotification */}
             color={Colors[colorScheme ?? 'light'].text}
           />
         </View>

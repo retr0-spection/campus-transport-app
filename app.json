@@ -12,6 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "notification": {
+      "projectId": "kudunav-notifications"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.campustransport.app"

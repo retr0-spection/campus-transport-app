@@ -26,6 +26,7 @@ import API from "@/api";
 import { Colors } from "@/constants/Colors";
 import QRCode from "react-native-qrcode-svg";
 import SelectDropdown from "react-native-select-dropdown";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 const BicycleRentalScreen = () => {
   const [modalVisible, setModalVisible] = useState(true);
@@ -173,7 +174,7 @@ const BicycleRentalScreen = () => {
             Show this QR Code to scanner to unlock a {type}
           </Text>
           <QRCode
-            value="http://awesome.link.qr"
+            value={'2'}
             size={Dimensions.get("window").width * 0.8}
           />
         </View>
@@ -193,8 +194,8 @@ const BicycleRentalScreen = () => {
               renderButton={(selectedItem, isOpened) => {
                 return (
                   <TouchableOpacity style={styles.locationContainer}>
-                    <Text style={styles.locationIcon}>📍</Text>
-                    <Text style={[styles.locationText]}>
+                    <FontAwesome5 name='charging-station' color='white' size={20} style={{paddingRight:10}}/>
+                    <Text style={styles.locationText}>
                       {selectedRentalStation}
                     </Text>
                   </TouchableOpacity>
@@ -203,7 +204,7 @@ const BicycleRentalScreen = () => {
               renderItem={(item, index, isSelected) => {
                 return (
                   <View style={styles.locationContainer}>
-                    <Text style={[styles.locationText, {color:Colors[colorScheme ?? "light"].text}]}>{item}</Text>
+                    <Text style={styles.locationText}>{item}</Text>
                   </View>
                 );
               }}
@@ -225,7 +226,7 @@ const BicycleRentalScreen = () => {
               <Text style={styles.priceValue}>R{vehicle.price}</Text>
             </View>
             <TouchableOpacity
-              style={styles.rentButton}
+              style={[styles.rentButton, {backgroundColor: count ?  "#ffa000" : "#9e6100"}]}
               onPress={pay}
               disabled={!count}
             >
@@ -328,7 +329,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   rentButton: {
-    backgroundColor: "#ffa000",
+    
     borderRadius: 8,
     padding: 16,
     alignItems: "center",

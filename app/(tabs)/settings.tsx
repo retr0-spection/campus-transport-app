@@ -18,10 +18,12 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Location from "expo-location";
 
 
+
 const Settings = () => {
   const colorScheme = useColorScheme();
   const ref = useRef();
   const [dispatched, setDispatched] = React.useState(false)
+  const [origin, setOrigin] = React.useState({})
   const dispatch = useDispatch()
   const router = useRouter()
   const profile = useSelector(selectProfile)
@@ -43,14 +45,13 @@ const Settings = () => {
   };
 
 
+
+
+
   const sendLocation = async () => {
-    const config = {
-      headers: {
-        Authorization:'Bearer ' + profile.token
-      }
-    }
-    const location = await getCurrentLocation()
-    const res = await axios.post('https://campus-safety.azurewebsites.net/panic', {location}, config)
+    const origin = await getCurrentLocation()
+    const token = "eUVIYir4daJCIheDkj4p7Xwt8i5idhTRw6sSZlUTbIJtJHwgOc4xDqjubTkAPmPdoeK4cHoGXYsO15RvtR0ajiOscwuQzMoMmhCxjOlElvq0KiLVYyFzTtdKXo1EtPq1qjRdpMotdzw5VlKGO3m"
+    const res = await axios.post(`https://campus-safety.azurewebsites.net/emergency/panic/external/${token}`, {lat:origin.latitude, long:origin.longitude, email:profile.email})
   }
 
   return (
