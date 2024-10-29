@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
+    margin: 16,
   },
   list: {
     flex: 1,

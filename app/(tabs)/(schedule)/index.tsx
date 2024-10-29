@@ -78,7 +78,7 @@ const App = () => {
         >
           Bus schedule
         </Text>
-        {/* <TouchableOpacity activeOpacity={.7} onPress={() => null}>
+        {/* <TouchableOpacity activeOpacity={.7} onPress={() => router.push<"subscribe">("subscribe")}>
           <Feather name="more-horizontal" color={Colors[colorScheme ?? 'light'].text} size={20} />
 
           </TouchableOpacity> */}
