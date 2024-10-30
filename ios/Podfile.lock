@@ -2652,6 +2652,8 @@ PODS:
   - RecaptchaInterop (100.0.0)
   - RNCAsyncStorage (2.0.0):
     - React-Core
+  - RNCPushNotificationIOS (1.11.0):
+    - React-Core
   - RNFBApp (21.0.0):
     - Firebase/CoreOnly (= 11.2.0)
     - React-Core
@@ -2838,6 +2840,7 @@ DEPENDENCIES:
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
@@ -3031,6 +3034,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNCPushNotificationIOS:
+    :path: "../node_modules/@react-native-community/push-notification-ios"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
@@ -3156,6 +3161,7 @@ SPEC CHECKSUMS:
   ReactCommon: f79ae672224dc1e6c2d932062176883c98eebd57
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
   RNCAsyncStorage: d35c79ffba52c1013013e16b1fc295aec2feabb6
+  RNCPushNotificationIOS: 64218f3c776c03d7408284a819b2abfda1834bc8
   RNFBApp: 4122dd41d8d7ff017b6ecf777a6224f5b349ca04
   RNFBAuth: 1632cefd787a43ba952fa52ff016e7b69fe355cb
   RNFBFirestore: 5f110e37b7f7f3d6e03c85044dd4cf3ebacec38b
