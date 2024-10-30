@@ -151,7 +151,6 @@ export default function App() {
     useEffect(() => {
         PushNotificationIOS.requestPermissions();
         PushNotificationIOS.addEventListener("register", (token) => {
-          alert(token)
           axios.post(`https://gateway.tandemworkflow.com/api/v1/notification/users/register/device`, {
             userId:profile.id,
             deviceToken: token,

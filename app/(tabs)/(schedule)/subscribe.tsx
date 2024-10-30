@@ -70,6 +70,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectProfile } from '@/redux/slices/userSlice';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '@/constants/Colors';
+import { useRouter } from 'expo-router';
 
 
   export default function RouteSubscriptionList() {
@@ -78,6 +79,7 @@ import { Colors } from '@/constants/Colors';
     const [subscribedRoutes, setSubscribedRoutes] = useState(new Set());
     const colorScheme = useColorScheme()
     const profile = useSelector(selectProfile)
+    const router = useRouter()
     const fetchRoutes = async () => {
       try {
         const response = await API.V1.Schedules.GetRoutedetails({});
@@ -152,7 +154,19 @@ import { Colors } from '@/constants/Colors';
     return (
       <SafeAreaView style={[styles.container, {backgroundColor:Colors[colorScheme ?? "light"].background}]}>
         {/* <Text style={[styles.title,  {color:Colors[colorScheme ?? "light"].text}]}>Available Routes</Text> */}
+        <View style={{flexDirection:'row', alignItems:'center'}}>
+        <TouchableOpacity onPress={router.back}>
+          <Text
+            style={[
+              { color: Colors[colorScheme ?? "light"].text, fontSize:26 },
+              
+            ]}
+          >
+            ←
+          </Text>
+        </TouchableOpacity>
         <Text style={[styles.title,  {color:Colors[colorScheme ?? "light"].text}]}>Stops</Text>
+        </View>
         <FlatList
           data={routes}
           renderItem={renderRouteItem}
