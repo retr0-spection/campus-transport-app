@@ -177,7 +177,7 @@ const NotificationsScreen = () => {
                     } else {
                         status !="read" && markAsRead(_id); // This should call your function to mark the notification as read
                         setSelectedAlert({ _id, type, message, createdAt, status });
-                        if (selectedAlert?.type == 'ScheduleChange'){
+                        if (selectedAlert?.type == 'Schedule Change'){
                             setModalVisible(true);
                         }
                     }
