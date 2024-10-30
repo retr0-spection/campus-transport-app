@@ -144,14 +144,14 @@ export default function App() {
   };
 
     useEffect(() => {
-      store.dispatch(fetchNotifications(profile.id));
+      store.dispatch(fetchNotifications(profile?.id));
   }, []);
 
 
     useEffect(() => {
         PushNotificationIOS.requestPermissions();
         PushNotificationIOS.addEventListener("register", (token) => {
-          axios.post(`https://gateway.tandemworkflow.com/api/v1/notification/users/${profile.id}/device`, {
+          axios.post(`https://gateway.tandemworkflow.com/api/v1/notification/users/${profile?.id}/device`, {
             deviceToken: token,
             deviceType:Platform.OS,
         });
@@ -213,7 +213,7 @@ export default function App() {
   };
 
   const apiUrl =
-    "http://ec2-52-40-184-137.us-west-2.compute.amazonaws.com/api/v1/navigation/poi";
+    "https://gateway.tandemworkflow.com/api/v1/navigation/poi";
 
   const getCurrentLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -291,10 +291,10 @@ export default function App() {
 
   const FilterMarkers = ({ query }) => {
     const _ = markers.filter((marker) => marker.name.toLowerCase().includes(query.toLowerCase()));
-
     return (
       <View style={{ borderRadius: 10, marginTop: 10, backgroundColor:Colors[colorScheme ?? 'light'].background }}>
         {_.map((item, index) => {
+          console.warn(item)
           return (
             <TouchableOpacity
             onPress={() => {

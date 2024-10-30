@@ -74,17 +74,17 @@ const Schedules = {
         return (await axios.get(domain + '/bus-schedule/routenames', config)).data
     },
     GetRoutedetails : async (config: AxiosRequestConfig): Promise<any> => {
-        return (await axios.get(domain + '/api/v1/bus-schedule/allroutes', config)).data
+        return (await axios.get(domain + '/bus-schedule/allroutes', config)).data
     },
     Getsubscription : async (config: AxiosRequestConfig): Promise<any> => {
-        return (await axios.get(domain + '/api/v1/bus-schedule/listsub', config)).data
+        return (await axios.get(domain + '/bus-schedule/listsub', config)).data
     },
     CreatesubscriptionObject:async (payload,config:AxiosRequestConfig) => {
-        const response = await axios.post(domain + '/api/v1/bus-schedule/addsub',payload, config)
+        const response = await axios.post(domain + '/bus-schedule/addsub',payload, config)
         return response.data
     },
     RemovesubscriptionObject:async (payload,config:AxiosRequestConfig) => {
-        const response = await axios.post(domain + '/api/v1/bus-schedule/removesub',payload, config)
+        const response = await axios.post(domain + '/bus-schedule/removesub',payload, config)
         return response.data
     },
 }

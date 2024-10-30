@@ -26,7 +26,7 @@ import API from "@/api";
 import { Colors } from "@/constants/Colors";
 import QRCode from "react-native-qrcode-svg";
 import SelectDropdown from "react-native-select-dropdown";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 
 const BicycleRentalScreen = () => {
   const [modalVisible, setModalVisible] = useState(true);
@@ -160,6 +160,7 @@ const BicycleRentalScreen = () => {
       <ActionSheet
         ref={qrCodeModalRef}
         containerStyle={{ height: "60%", backgroundColor: "#1a237e" }}
+        backgroundInteractionEnabled={true} isModal={false}
       >
         <View style={{ width: "100%", height: "100%", alignItems: "center" }}>
           <Text
@@ -182,7 +183,7 @@ const BicycleRentalScreen = () => {
       <ActionSheet
         ref={modalRef}
         containerStyle={{ height: "10%", backgroundColor: "#1a237e" }}
-        backgroundInteractionEnabled
+        backgroundInteractionEnabled={true} isModal={false}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -198,13 +199,15 @@ const BicycleRentalScreen = () => {
                     <Text style={styles.locationText}>
                       {selectedRentalStation}
                     </Text>
+                    <AntDesign name='down' color='white' size={22} style={{paddingLeft:10}}/>
+
                   </TouchableOpacity>
                 );
               }}
               renderItem={(item, index, isSelected) => {
                 return (
                   <View style={styles.locationContainer}>
-                    <Text style={styles.locationText}>{item}</Text>
+                    <Text style={[styles.locationText, {color:Colors[colorScheme].text}]}>{item}</Text>
                   </View>
                 );
               }}

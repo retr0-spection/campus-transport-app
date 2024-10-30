@@ -65,9 +65,9 @@ const RentalHistoryScreen: React.FC = () => {
         <TouchableOpacity onPress={router.back}>
                 <Ionicons name="arrow-back" color={Colors[colorScheme].text} size={26}/>
         </TouchableOpacity>
-        <Text style={styles.title}>Rental History</Text>
+        <Text style={[styles.title,{color:Colors[colorScheme].text}]}>Rental History</Text>
       </View>
-      <ScrollView>
+      {rentalHistory?.length ?<ScrollView>
         {rentalHistory.map((item, index) => {
           const image = imageToRender(item.vehicle?.type)
           const _date = new Date(item.rentTimestamp)
@@ -98,7 +98,7 @@ const RentalHistoryScreen: React.FC = () => {
           </> 
 }
         )}
-      </ScrollView>
+      </ScrollView> : <View style={{height:'100%', width:'100%', justifyContent:'center', alignItems:'center'}}><Text style={{color:Colors[colorScheme].text, fontSize:20,}}>No past rentals</Text></View>}
       <ActionSheet
         ref={qrCodeModalRef}
         containerStyle={{ height: "60%", backgroundColor: "#1a237e" }}

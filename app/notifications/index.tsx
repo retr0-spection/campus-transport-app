@@ -186,11 +186,7 @@ const NotificationsScreen = () => {
                 style={[
                     styles.notificationContainer,
                     {
-                        backgroundColor: selectedIds.includes(_id)
-                            ? darkenColor(Colors[colorScheme].background, 30) 
-                            : (status != 'read'
-                                ? (colorScheme === 'light' ? Colors.light.tint : darkenColor("#c5c6c7", 80)) // Lighter color for unread notifications
-                                : Colors[colorScheme].background) // Default background for read notifications
+                        backgroundColor: Colors[colorScheme].background
                     }
                 ]}
             >
