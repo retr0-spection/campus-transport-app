@@ -20,6 +20,7 @@ import API from "@/api";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import { Feather } from '@expo/vector-icons';
+import { useRouter, Href } from "expo-router";
 
 const App = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -78,10 +79,10 @@ const App = () => {
         >
           Bus schedule
         </Text>
-        {/* <TouchableOpacity activeOpacity={.7} onPress={() => router.push<"subscribe">("subscribe")}>
+        <TouchableOpacity activeOpacity={.7} onPress={() => router.push<"subscribe">("subscribe")}>
           <Feather name="more-horizontal" color={Colors[colorScheme ?? 'light'].text} size={20} />
 
-          </TouchableOpacity> */}
+          </TouchableOpacity>
           </View>
           {departures?.map((item) => renderDeparture({ item }))}
         </ScrollView>}

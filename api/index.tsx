@@ -97,7 +97,11 @@ type AuthType = {
 
 interface ScheduleType {
     GetSchedules: typeof Schedules.GetSchedules;
-    GetRoutes: typeof Schedules.GetRoutes
+    GetRoutes: typeof Schedules.GetRoutes;
+    GetRoutedetails: typeof Schedules.GetRoutedetails;
+    Getsubscription: typeof Schedules.Getsubscription;
+    CreatesubscriptionObject: typeof Schedules.CreatesubscriptionObject;
+    RemovesubscriptionObject: typeof Schedules.RemovesubscriptionObject;
 }
 
 interface RentalType {
