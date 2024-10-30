@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   useColorScheme,
   ScrollView,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios"; // Make sure to install this package
@@ -29,6 +30,9 @@ const App = () => {
   const [selectedRoute, setSelectedRoute] = useState(null);
   const colorScheme = useColorScheme();
   const [loading, setLoading] = useState(true)
+  const [query, setQuery] = useState<string>("")
+  const queryRef = useRef()
+  const router = useRouter()
 
   // Fetch departures (live schedule) from API
   const fetchLiveSchedule = async () => {
@@ -57,23 +61,21 @@ const App = () => {
     fetchRoutes();
   }, []);
 
-  const renderDeparture = ({ item }) => (
-    <View style={styles.departure}>
+  const renderDeparture = ({ item, query }) => {
+    let show = query.length == 0 ? true : (item?.route?.includes(query) || item?.routeName?.includes(query) || item?.destination?.includes(query) || item.stopName.includes(query))
+    return (<View style={[styles.departure, {display:show ? 'flex' : 'none'}]}>
       <Text style={{color: colorScheme == 'dark' ?'gold': styles.departureTime.color}}>
         {item.time || item.departureTime}
       </Text>
       <Text style={[{fontSize:18, fontWeight:'bold'}, { color: Colors[colorScheme ?? "light"].text }]}>{item.route || item.routeName}</Text>
       <Text style={[{fontWeight:'medium', fontSize:16}, { color: Colors[colorScheme ?? "light"].text }]}>{item.destination || item.stopName}</Text>
-    </View>
-  );
+    </View>)}
 
   return (
     <SafeAreaView
       style={{ backgroundColor: Colors[colorScheme ?? "light"].background }}
     >
-     
-        {loading ? <View style={{height:'100%', width:'100%', justifyContent:'center', alignItems:'center'}}><ActivityIndicator color={'white'} /></View> : <ScrollView style={{paddingHorizontal:'5%'}}>
-        <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', paddingRight:20}}>
+     <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', paddingRight:20}}>
         <Text
           style={[styles.title, { color: Colors[colorScheme ?? "light"].text }]}
         >
@@ -81,10 +83,28 @@ const App = () => {
         </Text>
         <TouchableOpacity activeOpacity={.7} onPress={() => router.push<"subscribe">("subscribe")}>
           <Feather name="more-horizontal" color={Colors[colorScheme ?? 'light'].text} size={20} />
-
           </TouchableOpacity>
-          </View>
-          {departures?.map((item) => renderDeparture({ item }))}
+      
+     </View>
+        <TextInput
+            ref={queryRef}
+            placeholder="Filter upcoming schedules"
+            placeholderTextColor={colorScheme == "light" ? 'gray' : '#cecece'}
+            onChangeText={setQuery}
+            autoCorrect={false}
+            autoComplete="off"
+            style={{
+              backgroundColor:colorScheme == "light" ? '#cecece' : 'gray',
+              color:Colors[colorScheme ?? 'light'].text,
+              width: Dimensions.get('screen').width *.9,
+              marginHorizontal:Dimensions.get('screen').width *.05,
+              padding: 10,
+              borderRadius: 10,
+            }}
+          />
+        {loading ? <View style={{height:'100%', width:'100%', justifyContent:'center', alignItems:'center'}}><ActivityIndicator color={'white'} /></View> : <ScrollView style={{paddingHorizontal:'5%', height:'100%'}}>
+        
+          {departures?.map((item) => renderDeparture({ item, query }))}
         </ScrollView>}
      
     </SafeAreaView>

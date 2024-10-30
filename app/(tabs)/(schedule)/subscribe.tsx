@@ -63,19 +63,21 @@
 // });
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, useColorScheme } from 'react-native';
 import axios from 'axios';
 import API from "@/api";
 import { useSelector, useDispatch } from 'react-redux';
 import { selectProfile } from '@/redux/slices/userSlice';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors } from '@/constants/Colors';
 
 
   export default function RouteSubscriptionList() {
-    // const userId  = useSelector(selectProfile).id;
-    const userID = "U12356";
+    const userID  = useSelector(selectProfile).id;
     const [routes, setRoutes] = useState([]);
     const [subscribedRoutes, setSubscribedRoutes] = useState(new Set());
-  
+    const colorScheme = useColorScheme()
+    const profile = useSelector(selectProfile)
     const fetchRoutes = async () => {
       try {
         const response = await API.V1.Schedules.GetRoutedetails({});
@@ -98,12 +100,15 @@ import { selectProfile } from '@/redux/slices/userSlice';
   
     useEffect(() => {
       fetchRoutes();
-      fetchUserSubscriptions();
+      // fetchUserSubscriptions();
     }, []);
   
     const handleSubscribe = async (RouteID) => {
       try {
         if (subscribedRoutes.has(RouteID)) {
+          const config = {
+            Authorization: 'Bearer ' + profile.token
+          }
           // Unsubscribe
           await API.V1.Schedules.RemovesubscriptionObject({ userID, RouteID }, {}); // Replace with correct unsubscribe endpoint
           setSubscribedRoutes(prev => {
@@ -125,33 +130,36 @@ import { selectProfile } from '@/redux/slices/userSlice';
     const renderRouteItem = ({ item }) => (
       <View style={styles.routeItem}>
         <View style={styles.routeInfo}>
-          <Text style={styles.routeName}>{item.RouteName}</Text>
-          <Text style={styles.routeDetails}>{item.Details}</Text>
+          <Text style={[styles.routeName, {color:Colors[colorScheme ?? "light"].text}]}>{item.RouteName}</Text>
+          <Text style={[styles.routeDetails,  {color:Colors[colorScheme ?? "light"].text}]}>{item.Details}</Text>
         </View>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={[
             styles.subscribeButton,
-            subscribedRoutes.has(item.id) && styles.subscribedButton
+            subscribedRoutes.has(item.id) && styles.subscribedButton,{
+              marginHorizontal:5
+            }
           ]}
           onPress={() => handleSubscribe(item.id)}
         >
           <Text style={styles.buttonText}>
             {subscribedRoutes.has(item.id) ? 'Subscribed' : 'Subscribe'}
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     );
   
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Available Routes</Text>
+      <SafeAreaView style={[styles.container, {backgroundColor:Colors[colorScheme ?? "light"].background}]}>
+        {/* <Text style={[styles.title,  {color:Colors[colorScheme ?? "light"].text}]}>Available Routes</Text> */}
+        <Text style={[styles.title,  {color:Colors[colorScheme ?? "light"].text}]}>Stops</Text>
         <FlatList
           data={routes}
           renderItem={renderRouteItem}
           keyExtractor={item => item.RouteID.toString()}
           style={styles.list}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -168,6 +176,7 @@ const styles = StyleSheet.create({
   },
   list: {
     flex: 1,
+    height:'100%'
   },
   routeItem: {
     flexDirection: 'row',
