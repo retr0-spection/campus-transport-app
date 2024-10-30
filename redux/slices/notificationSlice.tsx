@@ -33,11 +33,15 @@ const notificationsSlice = createSlice({
         notifications: [],
         loading: false,
         error: null,
+        system:null
     },
     reducers: {
         clearNotifications: (state) => {
             state.notifications = [];
         },
+        setSystemMessage: (state, action) => {
+            state.system = action.payload
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -67,6 +71,7 @@ const notificationsSlice = createSlice({
     },
 });
 
-export const { clearNotifications } = notificationsSlice.actions;
+export const { clearNotifications, setSystemMessage } = notificationsSlice.actions;
+export const selectSystemMessage = (state) => state.notifications.system;
 
 export default notificationsSlice.reducer;

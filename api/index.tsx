@@ -25,16 +25,22 @@ export interface RentalItem {
 const Auth = {
     Verify : async (config: AxiosRequestConfig): Promise<VerifyResponse> => {
         return (await axios.post(domain + '/auth/google-auth', {}, config)).data
+    },
+    SignUp : async (payload, config: AxiosRequestConfig): Promise<VerifyResponse> => {
+        return (await axios.post(domain + '/auth/register', payload, config)).data
+    },
+    LogIn : async (payload, config: AxiosRequestConfig): Promise<VerifyResponse> => {
+        return (await axios.post(domain + '/auth/login', payload, config)).data
     }
 }
 
 const RentalAPI = {
     GetVehicles : async (config: AxiosRequestConfig): Promise<RentalItem[]> => {
-        const response = await axios.get(domain + 'rental/vehicles', config)
+        const response = await axios.get(domain + '/rental/vehicles', config)
         return response.data
     },
     GetRentalHistory : async (config: AxiosRequestConfig): Promise<RentalItem[]> => {
-        const response = await axios.get(domain + `rental/rentals`, config)
+        const response = await axios.get(domain + `/rental/rentals`, config)
 
         return response.data
     },
@@ -84,7 +90,9 @@ const Schedules = {
 }
 
 type AuthType = {
-    Verify: typeof Auth.Verify
+    Verify: typeof Auth.Verify;
+    SignUp: typeof Auth.SignUp;
+    LogIn: typeof Auth.LogIn
 }
 
 interface ScheduleType {

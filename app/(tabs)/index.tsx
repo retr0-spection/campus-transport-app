@@ -20,6 +20,8 @@ import {
   GooglePlaceDetail,
   GooglePlacesAutocomplete,
 } from "react-native-google-places-autocomplete";
+import PushNotificationIOS from "@react-native-community/push-notification-ios";
+
 import {
   requestNotificationPermission,
   setupNotifications,
@@ -46,6 +48,7 @@ import * as Notifications from 'expo-notifications';
 
 import { fetchNotifications } from '../../redux/slices/notificationSlice';
 import {store} from "../../redux/store";
+import axios from "axios";
 
 
 const { width, height } = Dimensions.get("window");
@@ -144,11 +147,20 @@ export default function App() {
       store.dispatch(fetchNotifications(profile.id));
   }, []);
 
-  useEffect(() => {
-    const userId = profile.id;
-    requestNotificationPermission(userId);
-    setupNotifications();
-  }, []);
+
+    useEffect(() => {
+        PushNotificationIOS.requestPermissions();
+        PushNotificationIOS.addEventListener("register", (token) => {
+          axios.post(`https://gateway.tandemworkflow.com/api/v1/notification/users/${profile.id}/device`, {
+            deviceToken: token,
+            deviceType:Platform.OS,
+        });
+  
+        return () => {
+          PushNotificationIOS.removeEventListener("register");
+        };
+      })
+    }, []);
 
   const [origin, setOrigin] = useState<LatLng | null>(null);
   const [destination, setDestination] = useState<CustomMarker | null>(null);

@@ -1,6 +1,8 @@
+import { setSystemMessage } from '@/redux/slices/notificationSlice';
 import messaging from '@react-native-firebase/messaging';
 import axios from 'axios';
 import { Platform } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 export const requestNotificationPermission = async (userId: string) => {
     const authStatus = await messaging().requestPermission();
@@ -30,9 +32,17 @@ export const requestNotificationPermission = async (userId: string) => {
 };
 
 // Handle background and foreground messages
-export const setupNotifications = () => {
+export const setupNotifications = (dispatch) => {
+
     messaging().onMessage(async remoteMessage => {
         console.log('Notification received in foreground:', remoteMessage);
+        dispatch(
+            setSystemMessage({
+              type: "danger",
+              message: 'not',
+            })
+          );
+          
         // Handle your notification display here
     });
 

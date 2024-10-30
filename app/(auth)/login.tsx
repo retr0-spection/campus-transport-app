@@ -129,7 +129,7 @@ const LoginComponent = () => {
           </View>
 
           <View>
-            <Image source={Kudu} style={{width:SCREEN_WIDTH, height:450}} resizeMode="contain"/>
+            <Image source={Kudu} style={{width:SCREEN_WIDTH, height:Dimensions.get('screen').height*.52}} resizeMode="contain"/>
           </View>
 
           <View style={{paddingHorizontal:'10%'}}>
@@ -137,10 +137,15 @@ const LoginComponent = () => {
             <Text style={{color:'white', fontSize:24} }>To continue, sign in with your Wits student account.</Text>
           </View>
 
-          <TouchableOpacity onPress={signIn} activeOpacity={0.7} style={{backgroundColor:'white', marginHorizontal:'10%',marginVertical:'5%',paddingHorizontal:'7%',paddingVertical:'3%',borderRadius:7,  flexDirection:'row', alignItems:'center', }}>
-            <AntDesign name="google" color={'black'} size={24} />
-            <Text style={{color:'black', fontSize:20, paddingHorizontal:'10%'}}>Continue with Google</Text>
+          <TouchableOpacity onPress={() => router.push('/(auth)/emailSignUp')} activeOpacity={0.7} style={{backgroundColor:'#ffa000', marginHorizontal:'10%',marginVertical:'2%',paddingHorizontal:'7%',paddingVertical:'3%',borderRadius:7,  flexDirection:'row', alignItems:'center', }}>
+            <AntDesign name="mail" color={'white'} size={24} />
+            <Text style={{color:'white', fontSize:20, paddingHorizontal:'10%', fontWeight:'bold'}}>Continue with email</Text>
           </TouchableOpacity>
+          <TouchableOpacity onPress={signIn} activeOpacity={0.7} style={{backgroundColor:'white', marginHorizontal:'10%',marginVertical:'2%',paddingHorizontal:'7%',paddingVertical:'3%',borderRadius:7,  flexDirection:'row', alignItems:'center', }}>
+            <AntDesign name="google" color={'black'} size={24} />
+            <Text style={{color:'black', fontSize:20, paddingHorizontal:'5%', fontWeight:'bold'}}>Continue with Google</Text>
+          </TouchableOpacity>
+
         </View>
       </View>
     </SafeAreaView>

@@ -1,3 +1,4 @@
+import { SYSMESSAGE } from "@/components/announcements/systemStatus";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { Component } from "react";
@@ -9,10 +10,13 @@ const Layout = () => {
 
   return (
     <>
+      <SYSMESSAGE />
 
       <Stack>
         <Stack.Screen name="landing" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="emailSignUp" options={{ headerShown: false }} />
+        <Stack.Screen name="emailLogIn" options={{ headerShown: false }} />
       </Stack>
     </>
   );
