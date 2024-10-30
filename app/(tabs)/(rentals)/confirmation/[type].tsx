@@ -204,7 +204,7 @@ const BicycleRentalScreen = () => {
               renderItem={(item, index, isSelected) => {
                 return (
                   <View style={styles.locationContainer}>
-                    <Text style={[styles.locationText, {color:Colors[colorScheme ?? "light"].text}]}>{item}</Text>
+                    <Text style={styles.locationText}>{item}</Text>
                   </View>
                 );
               }}
