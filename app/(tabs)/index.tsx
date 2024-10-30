@@ -85,7 +85,7 @@ function InputAutocomplete({
           onPlaceSelected(details);
         }}
         query={{
-          key: "AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs",
+          key: "AIzaSyBWOgApSEqlR7Z0SN6NEgWQuZJPxZgt7Y4",
           language: "en",
         }}
       />

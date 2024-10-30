@@ -88,7 +88,7 @@ const MapViewComponent = React.forwardRef((props, ref) => {
         <MapViewDirections
           origin={origin}
           destination={destination.coordinate}
-          apikey="AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs"
+          apikey="AIzaSyBWOgApSEqlR7Z0SN6NEgWQuZJPxZgt7Y4"
           strokeColor="#6644ff"
           strokeWidth={4}
           optimizeWaypoints={true}

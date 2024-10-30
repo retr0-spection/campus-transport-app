@@ -8,8 +8,8 @@ import MapComponent from "./MapComponent";
 import axios from "axios";
 import { Colors } from "@/constants/Colors";
 
-const googleMapsApiKey = "AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs";
-const googlePlacesApiKey = "AIzaSyBepa0FXkdVrf36i_0cgj1C4oJV-uf7qrs";
+const googleMapsApiKey = "AIzaSyBWOgApSEqlR7Z0SN6NEgWQuZJPxZgt7Y4";
+const googlePlacesApiKey = "AIzaSyBWOgApSEqlR7Z0SN6NEgWQuZJPxZgt7Y4";
 
 interface CustomMarker {
   id: string;
